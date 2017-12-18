@@ -15,20 +15,20 @@
 (defun ts--get-hour (timespan time)
   "Get the hour from a TIMESPAN for a certain TIME."
   (condition-case nil
-      (car (mapcar 'string-to-number (split-string (ht-get* timespan :time time) ":")))
+      (car (mapcar 'string-to-number (split-string (ht-get* timespan time) ":")))
     (wrong-type-argument nil)))
 
 (defun ts--get-minute (timespan time)
   "Get the minute from a TIMESPAN for a certain TIME."
   (condition-case nil
-      (-last-item (mapcar 'string-to-number (split-string (ht-get* timespan :time time) ":")))
+      (-last-item (mapcar 'string-to-number (split-string (ht-get* timespan time) ":")))
     (wrong-type-argument nil)))
 
 (defun ts-within-timespan (date timespan)
   "Check if a DATE is within a TIMESPAN."
-  (let ((hour (nth 2  (decode-time (date-to-time date))))
-        (minute (nth 1  (decode-time (date-to-time date))))
-        (day (ts--time-to-calendardate (decode-time (date-to-time date))))
+  (let ((hour (nth 2  (decode-time date)))
+        (minute (nth 1  (decode-time date)))
+        (day (ts--time-to-calendardate (decode-time date)))
         (fromHour (ts--get-hour timespan :from))
         (fromMinute (ts--get-minute timespan :from))
         (toHour (ts--get-hour timespan :to))
@@ -40,7 +40,9 @@
      ((and (member day days) (not (numberp fromHour)) (not (numberp toHour))) t)
      ((and (not (member day days)) (not (numberp fromHour)) (not (numberp toHour))) nil)
      ((and (null days) (> hour fromHour) (< hour toHour)) t)
-     ((and (member day days) (> hour fromHour) (< hour toHour)) t))))
+     ((and (null days) (>= hour fromHour) (>= minute fromMinute) (<= hour toHour) (<= minute toMinute)) t)
+     ((and (member day days) (> hour fromHour) (< hour toHour)) t)
+     ((and (member day days) (>= hour fromHour) (>= minute fromMinute) (<= hour toHour) (<= minute toMinute)) t))))
 
 (provide 'timespan)
 

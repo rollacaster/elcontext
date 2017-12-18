@@ -3,6 +3,7 @@
 ;;; Code:
 (require 'ht)
 (require 'prodigy)
+(require 'timespan)
 
 (defvar elc-contexts (ht))
 
@@ -49,7 +50,9 @@
   (interactive)
   (let ((current (elc--get-gps)))
     (ht-each (lambda (name context)
-               (if (< (elc--distance current (ht-get* context :location :gps)) 0.100)
+               (if (and
+                    (< (elc--distance current (ht-get* context :location :gps)) 0.100)
+                    (ts-within-timespan (current-time) (ht-get context :time)))
                    (progn
                      (funcall (ht-get context :action))
                      (message (concat "Run " name)))))
