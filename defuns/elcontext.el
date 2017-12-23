@@ -4,17 +4,23 @@
 (require 'ht)
 (require 'prodigy)
 (require 'timespan)
+(require 'hydra)
 
 (defvar elc-contexts (ht))
 
 (defun elc--get-gps ()
   "Return the current gps."
-  (with-temp-buffer
-    (shell-command "whereami" (current-buffer))
+  (with-temp-buffer ()
+    (call-process "whereami" nil t)
     (let ((lat (buffer-substring 11 20))
-          (lon (buffer-substring 32 41))
-          (coordinates))
+          (lon (buffer-substring 32 41)))
       (ht (:lat (string-to-number lat)) (:lon (string-to-number lon))))))
+
+(defun elc--gps-to-string (gps)
+  "Convert GPS coordinate in a readable format."
+  (let ((lat (ht-get gps :lat))
+        (lon (ht-get gps :lon)))
+    (concat "Lat: " (number-to-string lat) " Lon: " (number-to-string) lon)))
 
 (defun elc--distance (from to)
   "Comutes the distance between FROM and TO in km."
@@ -57,6 +63,37 @@
                      (funcall (ht-get context :action))
                      (message (concat "Run " name)))))
              elc-contexts)))
+(setq elc--context-name "")
+(setq elc--context-location "")
+(setq elc--context-time "")
+(setq elc--context-action "")
+(defun elc-new-context ()
+  "Create a new context."
+  (interactive)
+  (progn
+    (setq elc--context-name (read-from-minibuffer "Name: "))
+    (defhydra hydra-context (:hint nil)
+      "
+_n_: Change name     | Name     %`elc--context-name
+_l_: Change location | Location %`elc--context-location
+_t_: Change time     | Time     %`elc--context-time
+_a_: Change action   | Action   %`elc--context-action
+"
+      ("n" (lambda ()
+             (interactive)
+             (setq elc--context-name (read-from-minibuffer "Name: "))))
+      ("l" (lambda ()
+             (interactive)
+             (setq elc--context-location (elc--gps-to-string (elc--get-gps)))))
+      ("t" (lambda ()
+             (interactive)
+             (setq elc--context-time (read-from-minibuffer "Time: "))))
+      ("a" (lambda ()
+             (interactive)
+             (setq elc--context-action (read-from-minibuffer "Action: ")))))
+    (hydra-context/body)))
+
+
 
 (provide 'elcontext)
 
