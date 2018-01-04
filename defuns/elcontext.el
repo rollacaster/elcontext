@@ -74,22 +74,24 @@
   (progn
     (setq elc--context-name (read-from-minibuffer "Name: "))
     (defhydra hydra-context (:hint nil
-                                   :foreign-keys run
-                                   :post (progn (setq elc--context-name "")
-                                                (setq elc--context-location "")
-                                                (setq elc--context-time "")
-                                                (setq elc--context-action "")))
+                                   :foreign-keys run)
       "
 _n_: Change name     | Name     %`elc--context-name
 _l_: Change location | Location %`elc--context-location
 _t_: Change time     | Time     %`elc--context-time
 _a_: Change action   | Action   %`elc--context-action
+
+_c_: Create context
 "
       ("n" (setq elc--context-name (read-from-minibuffer "Name: ")))
       ("l" (setq elc--context-location (elc--gps-to-string (elc--get-gps))))
       ("t" (elc-create-timespan) :exit t)
-      ("a" (setq elc--context-action (read-from-minibuffer "Action: ")))
-      ("c" (message "done") :color blue))
+      ("a" (setq elc--context-action (read-minibuffer "Action: ")))
+      ("c" (progn (setq elc--context-name "")
+                 (setq elc--context-location "")
+                 (setq elc--context-time "")
+                 (setq elc--context-action ""))
+       :color blue))
     (hydra-context/body)))
 
 (defvar elc-from-hour "")
