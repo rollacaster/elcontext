@@ -46,6 +46,27 @@
      ((and (member day days) (> hour fromHour) (< hour toHour)) t)
      ((and (member day days) (>= hour fromHour) (>= minute fromMinute) (<= hour toHour) (<= minute toMinute)) t))))
 
+(defun ts-timespan-to-string (timespan)
+  "Format a TIMESPAN to a string."
+  (let ((from-hour (ts--get-hour timespan :from))
+        (from-minute (ts--get-minute timespan :from))
+        (to-hour (ts--get-hour timespan :to))
+        (to-minute (ts--get-minute timespan :to))
+        (days (ht-get timespan :days)))
+    (concat
+     (when (not (null from-hour))
+         (concat
+          (ts-pad-time from-hour) ":" (ts-pad-time from-minute)
+          "-"
+          (ts-pad-time to-hour) ":" (ts-pad-time to-minute)))
+     (when (not (null days))
+         (concat (when (not (null from-hour)) " ")
+                 (s-replace " " "," (s-replace ")" "" (s-replace "(" "" (format "%s" days)))))))))
+
+(defun ts-pad-time (time)
+  "Pad a TIME with leading 0s."
+  (s-pad-left 2 "0" (number-to-string time)))
+
 (provide 'timespan)
 
 ;;; timespan.el ends here
