@@ -8,6 +8,31 @@
 
 (defvar elc-contexts (ht))
 
+(define-derived-mode elcontext-mode tabulated-list-mode "Contexts"
+  "Special mode for contexts."
+  (setq tabulated-list-format [("Name" 15 t) ("Location" 30 t) ("Time" 15 t) ("Action" 20 t)])
+  (setq tabulated-list-entries 'elc-get-contexts-for-table)
+  (tabulated-list-init-header)
+  (tabulated-list-print))
+
+(defun list-contexts ()
+  "Manage contexts in Emacs."
+  (interactive)
+  (get-buffer-create "elcontext")
+  (switch-to-buffer "elcontext")
+  (elcontext-mode))
+
+
+(defun elc-get-contexts-for-table ()
+  "Return all context in table format."
+  (ht-map (lambda (key context)
+            (list (ht-get context :name)
+                  (vector key
+                          (elc--gps-to-string (ht-get* context :location :gps))
+                          (ts-timespan-to-string (ht-get context :time))
+                          (format "%s" (ht-get context :action)))))
+          elc-contexts))
+
 (defun elc--get-gps ()
   "Return the current gps."
   (with-temp-buffer ()
@@ -124,7 +149,7 @@ _c_: Create timespan
                (message "Please specify a from and to time.")
                (hydra-timespan/body))
            (progn
-             (setq elc--context-time (elc-timespan-to-string))
+             (setq elc--context-time (ts-timespan-to-string))
              (progn (setq elc-from-hour "")
                     (setq elc-from-minute "")
                     (setq elc-to-hour "")
@@ -132,17 +157,6 @@ _c_: Create timespan
                     (setq elc-days ()))
              (hydra-context/body))))
    :color blue))
-
-(defun elc-timespan-to-string ()
-  "Format a timespan to a string."
-  (concat
-   (if (s-present? elc-from-hour)
-       (concat "From " elc-from-hour ":" elc-from-minute
-               " To " elc-to-hour ":" elc-to-minute " ")
-     "")
-   (if (not (null elc-days))
-       (concat "On " (s-replace " " ", " (s-replace ")" "" (s-replace "(" "" (format "%s" elc-days)))))
-     "")))
 
 (defun elc-create-timespan ()
   "Create a new timespan from user input."
