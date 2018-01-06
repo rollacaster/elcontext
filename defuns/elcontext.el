@@ -22,7 +22,6 @@
   (switch-to-buffer "elcontext")
   (elcontext-mode))
 
-
 (defun elc-get-contexts-for-table ()
   "Return all context in table format."
   (ht-map (lambda (key context)
@@ -89,75 +88,91 @@
                      (funcall (ht-get context :action))
                      (message (concat "Run " name)))))
              elc-contexts)))
+
 (setq elc--context-name "")
 (setq elc--context-location "")
-(setq elc--context-time "")
+(setq elc--context-time (ht))
 (setq elc--context-action "")
+(setq elc--from-hour "")
+(setq elc--from-minute "")
+(setq elc--to-hour "")
+(setq elc--to-minute "")
+(setq elc--days ())
+
 (defun elc-new-context ()
   "Create a new context."
   (interactive)
   (progn
     (setq elc--context-name (read-from-minibuffer "Name: "))
-    (defhydra hydra-context (:hint nil
-                                   :foreign-keys run)
-      "
+    (let ((location "") (time "") (action ""))
+      (defhydra hydra-context (:hint nil
+                                     :foreign-keys run)
+        "
 _n_: Change name     | Name     %`elc--context-name
-_l_: Change location | Location %`elc--context-location
-_t_: Change time     | Time     %`elc--context-time
-_a_: Change action   | Action   %`elc--context-action
+_l_: Change location | Location %`location
+_t_: Change time     | Time     %`time
+_a_: Change action   | Action   %`action
 
 _c_: Create context
 "
-      ("n" (setq elc--context-name (read-from-minibuffer "Name: ")))
-      ("l" (setq elc--context-location (elc--gps-to-string (elc--get-gps))))
-      ("t" (elc-create-timespan) :exit t)
-      ("a" (setq elc--context-action (read-minibuffer "Action: ")))
-      ("c" (progn (setq elc--context-name "")
-                 (setq elc--context-location "")
-                 (setq elc--context-time "")
-                 (setq elc--context-action ""))
-       :color blue))
+        ("n" (setq elc--context-name (read-from-minibuffer "Name: ")))
+        ("l" (let ((gps (elc-get-gps)))
+               (setq elc--context-location gps)
+               (setq location (elc--gps-to-string gps))))
+        ("t" (elc-create-timespan) :exit t)
+        ("a" (setq elc--context-action (read-minibuffer "Action: ")))
+        ("c" (progn
+               (elc-add-context elc--context-name (ht (:action elc--context-action)
+                                                      (:time elc--context-time)
+                                                      (:location (ht (:gps elc--context-location)))))
+               (setq elc--context-name "")
+               (setq elc--context-location "")
+               (setq elc--context-time "")
+               (setq elc--context-action ""))
+         :color blue)))
     (hydra-context/body)))
 
-(defvar elc-from-hour "")
-(defvar elc-from-minute "")
-(defvar elc-to-hour "")
-(defvar elc-to-minute "")
-(defvar elc-days ())
 
+(setq elc--time-from "")
+(setq elc--time-to "")
+(setq elc--time-days ())
 (defhydra hydra-timespan (:hint nil :foreign-keys warn)
-  "
-_f_: Change from | From %`elc-from-hour : %`elc-from-minute
-_t_: Change to   | To   %`elc-to-hour : %`elc-to-minute
-_d_: Add days    | Days %`elc-days
+    "
+_f_: Change from | From %`elc--time-from
+_t_: Change to   | To   %`elc--time-to
+_d_: Add days    | Days %`elc--time-days
 _r_: Remove days
 
 _c_: Create timespan
 "
-  ("f" (progn
-         (setq elc-from-hour (s-pad-left 2 "0" (elc-read-hour)))
-         (setq elc-from-minute (s-pad-left 2 "0" (elc-read-minute)))))
-  ("t" (progn
-         (setq elc-to-hour (s-pad-left 2 "0" (elc-read-hour)))
-         (setq elc-to-minute (s-pad-left 2 "0" (elc-read-minute)))))
-  ("d" (setq elc-days (-snoc elc-days (elc-read-week-days))))
-  ("r" (setq elc-days (-remove-item (ivy-read "Remove day:" elc-days) elc-days)))
-  ("c" (progn
-         (if (or (and (s-present? elc-from-hour) (s-blank? elc-to-hour))
-                 (and (s-present? elc-to-hour) (s-blank? elc-from-hour)))
+    ("f" (let ((from-hour (s-pad-left 2 "0" (elc-read-hour)))
+               (from-minute (s-pad-left 2 "0" (elc-read-minute))))
+           (message "from called")
+           (setq elc--time-from (concat from-hour ":" from-minute))
+           (ht-set! elc--context-time :from (concat from-hour ":" from-minute))))
+    ("t" (let ((to-hour (s-pad-left 2 "0" (elc-read-hour)))
+               (to-minute (s-pad-left 2 "0" (elc-read-minute))))
+           (setq elc--time-to (concat to-hour ":" to-minute))
+           (ht-set! elc--context-time :to (concat to-hour ":" to-minute))))
+    ("d" (progn
+           (setq elc--time-days (-snoc elc--time-days (elc-read-week-days elc--time-days)))
+           (ht-set! elc--context-time :days elc--time-days)))
+    ("r" (let ((days (-remove-item (ivy-read "Remove day:" elc--time-days) elc--time-days)))
+           (setq elc--time-days days)
+           (ht-set! elc--context-time :days elc--time-days)))
+    ("c" (progn
+           (if (or (and (s-present? elc-from-hour) (s-blank? elc-to-hour))
+                   (and (s-present? elc-to-hour) (s-blank? elc-from-hour)))
+               (progn
+                 (message "Please specify a from and to time.")
+                 (hydra-timespan/body))
              (progn
-               (message "Please specify a from and to time.")
-               (hydra-timespan/body))
-           (progn
-             (setq elc--context-time (ts-timespan-to-string))
-             (progn (setq elc-from-hour "")
-                    (setq elc-from-minute "")
-                    (setq elc-to-hour "")
-                    (setq elc-to-minute "")
-                    (setq elc-days ()))
-             (hydra-context/body))))
-   :color blue))
-
+               (setq elc--context-time (ts-timespan-to-string elc--context-time))
+               (setq elc--time-from "")
+               (setq elc--time-to "")
+               (setq elc--time-days ())
+               (hydra-context/body))))
+     :color blue))
 (defun elc-create-timespan ()
   "Create a new timespan from user input."
   (interactive)
@@ -176,10 +191,10 @@ _c_: Create timespan
           (read-from-minibuffer (format "Please specify a number between %d-%d." from to)))))
     number))
 
-(defun elc-read-week-days ()
-  "Read week days from user input."
+(defun elc-read-week-days (selected-days)
+  "Read week days from user input ignoring SELECTED-DAYS."
   (ivy-read "Week day: "
-            (-difference '("Mon" "Tue" "Wed" "Thu" "Fri" "Sat" "Sun" ) elc-days)
+            (-difference '("Mon" "Tue" "Wed" "Thu" "Fri" "Sat" "Sun" ) selected-days)
             :require-match t))
 
 (defun elc-read-hour ()
