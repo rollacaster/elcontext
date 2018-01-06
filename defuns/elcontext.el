@@ -3,8 +3,8 @@
 ;;; Code:
 (require 'ht)
 (require 'prodigy)
-(require 'timespan)
 (require 'hydra)
+(require 'elcontext-time)
 
 (defvar elc-contexts (ht))
 

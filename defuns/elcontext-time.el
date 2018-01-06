@@ -67,6 +67,6 @@
   "Pad a TIME with leading 0s."
   (s-pad-left 2 "0" (number-to-string time)))
 
-(provide 'timespan)
+(provide 'elcontext-time)
 
-;;; timespan.el ends here
+;;; elcontext-time.el ends here

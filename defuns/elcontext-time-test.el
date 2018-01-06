@@ -2,6 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 (require 'ht)
+(require 'elcontext-time)
 
 (ert-deftest ts-within-timespanp ()
   "Test if a date is within a timespan."
@@ -24,4 +25,4 @@
     (should (equal (ts-timespan-to-string (ht (:days '("Tue")))) "Tue"))
     (should (equal (ts-timespan-to-string (ht (:days '("Mon" "Tue")))) "Mon,Tue")))
 
-;;; timespan-test.el ends here
+;;; elcontext-time-test.el ends here
