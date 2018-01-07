@@ -45,8 +45,7 @@
                     (< (elc--distance current (ht-get context :location)) 0.100)
                     (elc-time-within-timespanp (current-time) (ht-get context :time)))
                    (progn
-                     (funcall (ht-get context :action))
-                     (message (concat "Run " name)))))
+                     (eval (ht-get context :action)))))
              elc-contexts)))
 
 (setq elc--context-current-name "")
