@@ -32,51 +32,9 @@
                           (format "%s" (ht-get context :action)))))
           elc-contexts))
 
-(defun elc--get-gps ()
-  "Return the current gps."
-  (with-temp-buffer ()
-    (call-process "whereami" nil t)
-    (let ((lat (buffer-substring 11 20))
-          (lon (buffer-substring 32 41)))
-      (ht (:lat (string-to-number lat)) (:lon (string-to-number lon))))))
-
-
-(defun elc--gps-to-string (gps)
-  "Convert GPS coordinate in a readable format."
-  (if gps
-      (let ((lat (ht-get gps :lat))
-            (lon (ht-get gps :lon)))
-        (concat "Lat: " (number-to-string lat) " Lon: " (number-to-string lon)))
-    ""))
-
-(defun elc--distance (from to)
-  "Comutes the distance between FROM and TO in km."
-  (let ((earth-radius 6371))
-    (* 2 earth-radius (asin (sqrt (elc--haversine from to))))))
-
-(defun elc--haversine (from to)
-  "Computes the haversine for two coordinates FROM and TO."
-  (let ((dLat (elc--degree-to-radians (abs (- (ht-get to :lat) (ht-get from :lat)))))
-        (dLon (elc--degree-to-radians (abs (- (ht-get to :lon) (ht-get from :lon)))))
-        (lat1 (elc--degree-to-radians (ht-get from :lat)))
-        (lat2 (elc--degree-to-radians (ht-get to :lat))))
-    (+ (expt (sin (/ dLat 2)) 2) (* (cos lat1) (cos lat2) (expt (sin (/ dLon 2)) 2)))))
-
-(defun elc--get-lat (context)
-  "Get the latitute for a CONTEXT."
-  (ht-get* elc-contexts context :location :gps :lat))
-
-(defun elc--get-lon (context)
-  "Get the longitude for a CONTEXT."
-  (ht-get* elc-contexts context :location :gps :lon))
-
 (defun elc-add-context (contextName context)
   "Store a context with CONTEXTNAME and CONTEXT."
   (ht-set! elc-contexts contextName context))
-
-(defun elc--degree-to-radians (degrees)
-  "Convert DEGREES to radians."
-  (/ (* degrees pi) 180))
 
 (defun elc-check-contexts ()
   "Execute contexts if they are valid."
@@ -97,14 +55,14 @@
                                    :foreign-keys run)
       "
 _n_: Change name     | Name     %(ht-get elc--context-current :name)
-_l_: Change location | Location %(elc--gps-to-string (ht-get elc--context-current :location))
+_l_: Change location | Location %(elc-location-gps-to-string (ht-get elc--context-current :location))
 _t_: Change time     | Time     %(elc-time-timespan-to-string (ht-get elc--context-current :time))
 _a_: Change action   | Action   %(ht-get elc--context-current :action)
 
 _c_: Create context
 "
       ("n" (ht-set! elc--context-current :name (read-from-minibuffer "Name: ")))
-      ("l" (ht-set! elc--context-current :location (elc--get-gps)))
+      ("l" (ht-set! elc--context-current :location (elc-location-get-gps)))
       ("t" (elc-create-timespan) :exit t)
       ("a" (ht-set! elc--context-current :action (read-minibuffer "Action: ")))
       ("c" (progn
