@@ -26,15 +26,15 @@
       (-last-item (split-string (ht-get* timespan time) ":"))
     (wrong-type-argument nil)))
 
-(defun elc-time-within-timespan (date timespan)
+(defun elc-time-within-timespanp (date timespan)
   "Check if a DATE is within a TIMESPAN."
   (let ((hour (nth 2  (decode-time date)))
         (minute (nth 1  (decode-time date)))
         (day (elc-time-date-to-calendardate (decode-time date)))
-        (fromHour (elc-time--get-hour timespan :from))
-        (fromMinute (elc-time--get-minute timespan :from))
-        (toHour (elc-time--get-hour timespan :to))
-        (toMinute (elc-time--get-minute timespan :to))
+        (fromHour (string-to-number (elc-time--get-hour timespan :from)))
+        (fromMinute (string-to-number (elc-time--get-minute timespan :from)))
+        (toHour (string-to-number (elc-time--get-hour timespan :to)))
+        (toMinute (string-to-number (elc-time--get-minute timespan :to)))
         (days (ht-get timespan :days)))
     (cond
      ((and (numberp fromHour) (not (numberp toHour))) (user-error "From hour was specified without To hour"))
@@ -42,6 +42,7 @@
      ((and (member day days) (not (numberp fromHour)) (not (numberp toHour))) t)
      ((and (not (member day days)) (not (numberp fromHour)) (not (numberp toHour))) nil)
      ((and (null days) (> hour fromHour) (< hour toHour)) t)
+     ((and (null days) (>= hour fromHour) (>= minute fromMinute) (< hour toHour)) t)
      ((and (null days) (>= hour fromHour) (>= minute fromMinute) (<= hour toHour) (<= minute toMinute)) t)
      ((and (member day days) (> hour fromHour) (< hour toHour)) t)
      ((and (member day days) (>= hour fromHour) (>= minute fromMinute) (<= hour toHour) (<= minute toMinute)) t))))

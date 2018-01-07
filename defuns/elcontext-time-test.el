@@ -6,16 +6,17 @@
 
 (ert-deftest elc-time-within-timespanp ()
   "Test if a date is within a timespan."
-  (should-error (elc-time-within-timespan (date-to-time "2017-12-01 13:00") (ht (:from "12:00"))))
-  (should-error (elc-time-within-timespan (date-to-time "2017-12-01 13:00") (ht (:to "12:00"))))
-  (should (elc-time-within-timespan (date-to-time "2017-12-01 13:00") (ht (:from "12:00") (:to "15:00"))))
-  (should-not (elc-time-within-timespan (date-to-time "2017-12-01 13:00") (ht (:from "14:00") (:to "15:00"))))
-  (should (elc-time-within-timespan (date-to-time "2017-12-01 13:00") (ht (:days '("Fri")))))
-  (should-not (elc-time-within-timespan (date-to-time "2017-12-01 13:00") (ht (:days '("Mon")))))
-  (should (elc-time-within-timespan (date-to-time "2017-12-01 13:00") (ht (:from "12:00") (:to "15:00") (:days '("Mon" "Fri")))))
-  (should (elc-time-within-timespan (date-to-time "2017-12-01 13:00") (ht (:from "13:00") (:to "13:10") (:days '("Fri")))))
-  (should (elc-time-within-timespan (date-to-time "2017-12-01 13:00") (ht (:from "13:00") (:to "13:10"))))
-  (should-not (elc-time-within-timespan (date-to-time "2017-12-01 13:00") (ht (:from "12:00") (:to "15:00") (:days '("Mon" "Tue"))))))
+  (should-error (elc-time-within-timespanp (date-to-time "2017-12-01 13:00") (ht (:from "12:00"))))
+  (should-error (elc-time-within-timespanp (date-to-time "2017-12-01 13:00") (ht (:to "12:00"))))
+  (should (elc-time-within-timespanp (date-to-time "2017-12-01 13:00") (ht (:from "12:00") (:to "15:00"))))
+  (should-not (elc-time-within-timespanp (date-to-time "2017-12-01 13:00") (ht (:from "14:00") (:to "15:00"))))
+  (should (elc-time-within-timespanp (date-to-time "2017-12-01 13:00") (ht (:days '("Fri")))))
+  (should-not (elc-time-within-timespanp (date-to-time "2017-12-01 13:00") (ht (:days '("Mon")))))
+  (should (elc-time-within-timespanp (date-to-time "2017-12-01 13:00") (ht (:from "12:00") (:to "15:00") (:days '("Mon" "Fri")))))
+  (should (elc-time-within-timespanp (date-to-time "2017-12-01 13:00") (ht (:from "13:00") (:to "13:10") (:days '("Fri")))))
+  (should (elc-time-within-timespanp (date-to-time "2017-12-01 13:00") (ht (:from "13:00") (:to "13:10"))))
+  (should-not (elc-time-within-timespanp (date-to-time "2017-12-01 13:00") (ht (:from "12:00") (:to "15:00") (:days '("Mon" "Tue")))))
+  (should (elc-time-within-timespanp (date-to-time "2017-12-01 13:10") (ht (:from "13:00") (:to "14:00")))))
 
 (ert-deftest elc-time-timespan-to-string ()
     "Test timespan conversion."
