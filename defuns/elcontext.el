@@ -43,9 +43,11 @@
 
 (defun elc--gps-to-string (gps)
   "Convert GPS coordinate in a readable format."
-  (let ((lat (ht-get gps :lat))
-        (lon (ht-get gps :lon)))
-    (concat "Lat: " (number-to-string lat) " Lon: " (number-to-string lon))))
+  (if gps
+      (let ((lat (ht-get gps :lat))
+            (lon (ht-get gps :lon)))
+        (concat "Lat: " (number-to-string lat) " Lon: " (number-to-string lon)))
+    ""))
 
 (defun elc--distance (from to)
   "Comutes the distance between FROM and TO in km."
@@ -89,43 +91,31 @@
                      (message (concat "Run " name)))))
              elc-contexts)))
 
-(setq elc--context-name "")
-(setq elc--context-location (ht))
-(setq elc--context-time (ht))
-(setq elc--context-action "")
+(setq elc--context-current (ht (:name nil) (:time nil) (:action nil) (:location nil)))
+
+(defhydra hydra-context (:hint nil
+                                   :foreign-keys run)
+      "
+_n_: Change name     | Name     %(ht-get elc--context-current :name)
+_l_: Change location | Location %(elc--gps-to-string (ht-get elc--context-current :location))
+_t_: Change time     | Time     %(elc-time-timespan-to-string (ht-get elc--context-current :time))
+_a_: Change action   | Action   %(ht-get elc--context-current :action)
+
+_c_: Create context
+"
+      ("n" (ht-set! elc--context-current :name (read-from-minibuffer "Name: ")))
+      ("l" (ht-set! elc--context-current :location (elc--get-gps)))
+      ("t" (elc-create-timespan) :exit t)
+      ("a" (ht-set! elc--context-current :action (read-minibuffer "Action: ")))
+      ("c" (progn
+             (elc-add-context elc--context-name elc--context-current)
+             (setq elc--context-current (ht (:name nil) (:time nil) (:action nil) (:location nil))))
+       :color blue))
 
 (defun elc-new-context ()
   "Create a new context."
   (interactive)
-  (progn
-    (setq elc--context-name (read-from-minibuffer "Name: "))
-    (let ((location "") (time "") (action ""))
-      (defhydra hydra-context (:hint nil
-                                     :foreign-keys run)
-        "
-_n_: Change name     | Name     %`elc--context-name
-_l_: Change location | Location %`location
-_t_: Change time     | Time     %`time
-_a_: Change action   | Action   %`action
-
-_c_: Create context
-"
-        ("n" (setq elc--context-name (read-from-minibuffer "Name: ")))
-        ("l" (let ((gps (elc-get-gps)))
-               (setq elc--context-location gps)
-               (setq location (elc--gps-to-string gps))))
-        ("t" (elc-create-timespan) :exit t)
-        ("a" (setq elc--context-action (read-minibuffer "Action: ")))
-        ("c" (progn
-               (elc-add-context elc--context-name (ht (:action elc--context-action)
-                                                      (:time elc--context-time)
-                                                      (:location (ht (:gps elc--context-location)))))
-               (setq elc--context-name "")
-               (setq elc--context-location "")
-               (setq elc--context-time "")
-               (setq elc--context-action ""))
-         :color blue))
-      (hydra-context/body))))
+  (hydra-context/body))
 
 
 (provide 'elcontext)

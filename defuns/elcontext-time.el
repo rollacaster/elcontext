@@ -17,13 +17,13 @@
 (defun elc-time--get-hour (timespan time)
   "Get the hour from a TIMESPAN for a certain TIME."
   (condition-case nil
-      (car (mapcar 'string-to-number (split-string (ht-get* timespan time) ":")))
+      (car (split-string (ht-get* timespan time) ":"))
     (wrong-type-argument nil)))
 
 (defun elc-time--get-minute (timespan time)
   "Get the minute from a TIMESPAN for a certain TIME."
   (condition-case nil
-      (-last-item (mapcar 'string-to-number (split-string (ht-get* timespan time) ":")))
+      (-last-item (split-string (ht-get* timespan time) ":"))
     (wrong-type-argument nil)))
 
 (defun elc-time-within-timespan (date timespan)
@@ -48,62 +48,63 @@
 
 (defun elc-time-timespan-to-string (timespan)
   "Format a TIMESPAN to a string."
-  (let ((from-hour (elc-time--get-hour timespan :from))
-        (from-minute (elc-time--get-minute timespan :from))
-        (to-hour (elc-time--get-hour timespan :to))
-        (to-minute (elc-time--get-minute timespan :to))
-        (days (ht-get timespan :days)))
-    (concat
-     (when (not (null from-hour))
-         (concat
-          (elc-time--pad-time from-hour) ":" (elc-time--pad-time from-minute)
-          "-"
-          (elc-time--pad-time to-hour) ":" (elc-time--pad-time to-minute)))
-     (when (not (null days))
-         (concat (when (not (null from-hour)) " ")
-                 (s-replace " " "," (s-replace ")" "" (s-replace "(" "" (format "%s" days)))))))))
+  (if timespan
+      (let ((from-hour (elc-time--get-hour timespan :from))
+            (from-minute (elc-time--get-minute timespan :from))
+            (to-hour (elc-time--get-hour timespan :to))
+            (to-minute (elc-time--get-minute timespan :to))
+            (days (ht-get timespan :days)))
+        (concat
+         (when (not (null from-hour))
+           (concat
+            (elc-time--pad-time from-hour) ":" (elc-time--pad-time from-minute)
+            "-"
+            (elc-time--pad-time to-hour) ":" (elc-time--pad-time to-minute)))
+         (when (not (null days))
+           (concat (when (not (null from-hour)) " ")
+                   (s-replace " " "," (s-replace ")" "" (s-replace "(" "" (format "%s" days))))))))
+    ""))
 
 (defun elc-time--pad-time (time)
   "Pad a TIME with leading 0s."
-  (s-pad-left 2 "0" (number-to-string time)))
+  (s-pad-left 2 "0" time))
 
-(defvar elc-time--from "")
-(defvar elc-time--to "")
-(defvar elc-time--days ())
+(defun elc-time--format-from (timespan)
+  "Format the from hourso of a TIMESPAN."
+  (ht-get timespan :from))
+
+(setq elc-time--current (ht))
+
 (defhydra hydra-timespan (:hint nil :foreign-keys warn)
     "
-_f_: Change from | From %`elc-time--from
-_t_: Change to   | To   %`elc-time--to
-_d_: Add days    | Days %`elc-time--days
+_f_: Change from | From %(ht-get elc-time--current :from)
+_t_: Change to   | To   %(ht-get elc-time--current :to)
+_d_: Add days    | Days %(ht-get elc-time--current :days)
 _r_: Remove days
 
 _c_: Create timespan
 "
-    ("f" (let ((from-hour (s-pad-left 2 "0" (elc-time--read-hour)))
-               (from-minute (s-pad-left 2 "0" (elc-time--read-minute))))
-           (setq elc-time--from (concat from-hour ":" from-minute))
-           (ht-set! elc--context-time :from (concat from-hour ":" from-minute))))
-    ("t" (let ((to-hour (s-pad-left 2 "0" (elc-time--read-hour)))
-               (to-minute (s-pad-left 2 "0" (elc-time--read-minute))))
-           (setq elc-time--to (concat to-hour ":" to-minute))
-           (ht-set! elc--context-time :to (concat to-hour ":" to-minute))))
-    ("d" (progn
-           (setq elc-time--days (-snoc elc-time--days (elc-time--read-week-days elc-time--days)))
-           (ht-set! elc--context-time :days elc-time--days)))
-    ("r" (let ((days (-remove-item (ivy-read "Remove day:" elc-time--days) elc-time--days)))
-           (setq elc-time--days days)
-           (ht-set! elc--context-time :days elc-time--days)))
+    ("f" (let ((from-hour (elc-time--pad-time (elc-time--read-hour)))
+               (from-minute (elc-time--pad-time (elc-time--read-minute))))
+           (ht-set! elc-time--current :from (concat from-hour ":" from-minute))))
+    ("t" (let ((to-hour (elc-time--pad-time (elc-time--read-hour)))
+               (to-minute (elc-time--pad-time (elc-time--read-minute))))
+           (ht-set! elc-time--current :to (concat to-hour ":" to-minute))))
+    ("d" (ht-set! elc-time--current :days
+                  (-snoc (ht-get elc-time--current :days)
+                         (elc-time--read-week-days (ht-get elc-time--current :days)))))
+    ("r" (ht-set! elc-time--current :days
+                  (-remove-item (ivy-read "Remove day:" (ht-get elc-time--current :days))
+                                (ht-get elc-time--current :days))))
     ("c" (progn
-           (if (or (and (s-present? elc-time--from) (s-blank? elc-time--to))
-                   (and (s-present? elc-time--to) (s-blank? elc-time--from)))
+           (if (or (and (s-present? (ht-get elc-time--current :from)) (s-blank? (ht-get elc-time--current :to)))
+                   (and (s-present? (ht-get elc-time--current :to)) (s-blank? (ht-get elc-time--current :from))))
                (progn
                  (message "Please specify a from and to time.")
                  (hydra-timespan/body))
              (progn
-               (setq elc--context-time (elc-time-timespan-to-string elc--context-time))
-               (setq elc-time--from "")
-               (setq elc-time--to "")
-               (setq elc-time--days ())
+               (ht-set! elc--context-current :time elc-time--current)
+               (setq elc-time--current (ht))
                (hydra-context/body))))
      :color blue))
 (defun elc-time-create-timespan ()
