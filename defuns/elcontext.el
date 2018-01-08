@@ -18,8 +18,8 @@
 (defun list-contexts ()
   "Manage contexts in Emacs."
   (interactive)
-  (get-buffer-create "elcontext")
-  (switch-to-buffer "elcontext")
+  (get-buffer-create "**Contexts**")
+  (switch-to-buffer "**Contexts**")
   (elcontext-mode))
 
 (defun elc-get-contexts-for-table ()
