@@ -49,7 +49,7 @@
              elc-contexts)))
 
 (setq elc--context-current-name "")
-(setq elc--context-current (ht (:time nil) (:action nil) (:location nil)))
+(setq elc--context-current (ht (:time (ht)) (:action nil) (:location nil)))
 
 (defhydra hydra-context (:hint nil :foreign-keys warn)
       "
@@ -62,12 +62,12 @@ _c_: Create context
 "
       ("n" (setq elc--context-current-name (read-from-minibuffer "Name: ")))
       ("l" (ht-set! elc--context-current :location (elc-location-get-gps)))
-      ("t" (elc-create-timespan) :exit t)
+      ("t" (elc-time-create-timespan (ht-get elc--context-current :time)) :exit t)
       ("a" (ht-set! elc--context-current :action (read-minibuffer "Action: ")))
       ("c" (progn
              (elc-add-context elc--context-current-name elc--context-current)
              (setq elc--context-current-name "")
-             (setq elc--context-current (ht (:time nil) (:action nil) (:location nil))))
+             (setq elc--context-current (ht (:time (ht)) (:action nil) (:location nil))))
        :color blue))
 
 (defun elc-new-context ()

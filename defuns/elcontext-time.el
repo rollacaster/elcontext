@@ -108,8 +108,10 @@ _c_: Create timespan
                (setq elc-time--current (ht))
                (hydra-context/body))))
      :color blue))
-(defun elc-time-create-timespan ()
-  "Create a new timespan from user input."
+
+(defun elc-time-create-timespan (timespan)
+  "Create a new timespan or a edit a existing TIMESPAN from user input."
+  (setq elc-time--current timespan)
   (hydra-timespan/body))
 
 (defun elc-time--read-number-range (from to prompt)
