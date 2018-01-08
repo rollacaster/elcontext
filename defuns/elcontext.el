@@ -2,7 +2,6 @@
 ;;; Commentary:
 ;;; Code:
 (require 'ht)
-(require 'prodigy)
 (require 'hydra)
 (require 'elcontext-time)
 
