@@ -13,6 +13,7 @@
     (define-key map (kbd "c") 'elc-new-context)
     (define-key map (kbd "e") 'elc-edit-context)
     (define-key map (kbd "d") 'elc-delete-context)
+    (define-key map (kbd "?") 'hydra-context/body)
     map)
   "Keymap for `elcontext-mode'.")
 
@@ -62,7 +63,7 @@
 (setq elc--context-id nil)
 (setq elc--context-current (ht (:name nil) (:time (ht)) (:action nil) (:location nil)))
 
-(defhydra hydra-context (:hint nil :foreign-keys warn)
+(defhydra hydra-create-context (:hint nil :foreign-keys warn)
       "
 _n_: Change name     | Name     %(ht-get elc--context-current :name)
 _l_: Change location | Location %(elc-location-gps-to-string (ht-get elc--context-current :location))
@@ -81,11 +82,26 @@ _c_: Create context
              (tabulated-list-print))
        :color blue))
 
+(defhydra hydra-context (:hint nil :exit t)
+      "
+**elcontext help**
+
+_c_: create context
+_e_: edit context
+_d_: delete context
+
+_q_: quit
+"
+      ("c" (elc-new-context))
+      ("e" (elc-edit-context))
+      ("d" (elc-delete-context))
+      ("q" nil))
+
 (defun elc-new-context ()
   "Create a new context."
   (interactive)
   (setq elc--context-id (uuidgen-4))
-  (hydra-context/body))
+  (hydra-create-context/body))
 
 (defun elc-edit-context ()
   "Edit context at point."
@@ -93,7 +109,7 @@ _c_: Create context
   (let ((context-id (tabulated-list-get-id)))
     (setq elc--context-id context-id)
     (setq elc--context-current (ht-get elc-contexts context-id))
-    (hydra-context/body)))
+    (hydra-create-context/body)))
 
 (defun elc-delete-context ()
   "Delete context at point."

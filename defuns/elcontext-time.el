@@ -74,7 +74,7 @@
   "Format the from hourso of a TIMESPAN."
   (ht-get timespan :from))
 
-(setq elc-time--current (ht))
+(defvar elc-time--current (ht))
 
 (defhydra hydra-timespan (:hint nil :foreign-keys warn)
     "
@@ -106,7 +106,7 @@ _c_: Create timespan
              (progn
                (ht-set! elc--context-current :time elc-time--current)
                (setq elc-time--current (ht))
-               (hydra-context/body))))
+               (hydra-create-context/body))))
      :color blue))
 
 (defun elc-time-create-timespan (timespan)
