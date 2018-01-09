@@ -71,6 +71,7 @@ _t_: Change time     | Time     %(elc-time-timespan-to-string (ht-get elc--conte
 _a_: Change action   | Action   %(ht-get elc--context-current :action)
 
 _c_: Create context
+_q_: Quit
 "
       ("n" (ht-set! elc--context-current :name (read-from-minibuffer "Name: ")))
       ("l" (ht-set! elc--context-current :location (elc-location-get-gps)))
@@ -79,8 +80,10 @@ _c_: Create context
       ("c" (progn
              (elc-add-context elc--context-id elc--context-current)
              (setq elc--context-current (ht (:name nil) (:time (ht)) (:action nil) (:location nil)))
-             (tabulated-list-print))
-       :color blue))
+             (tabulated-list-print)) :color blue)
+      ("q" (progn
+             (setq elc--context-id nil)
+             (setq elc--context-current (ht (:name nil) (:time (ht)) (:action nil) (:location nil)))) :exit t))
 
 (defhydra hydra-context (:hint nil :exit t)
       "

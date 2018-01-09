@@ -84,6 +84,7 @@ _d_: Add days    | Days %(ht-get elc-time--current :days)
 _r_: Remove days
 
 _c_: Create timespan
+_q_: Quit
 "
     ("f" (let ((from-hour (elc-time--pad-time (elc-time--read-hour)))
                (from-minute (elc-time--pad-time (elc-time--read-minute))))
@@ -107,7 +108,8 @@ _c_: Create timespan
                (ht-set! elc--context-current :time elc-time--current)
                (setq elc-time--current (ht))
                (hydra-create-context/body))))
-     :color blue))
+     :color blue)
+    ("q" (hydra-create-context/body) :exit t))
 
 (defun elc-time-create-timespan (timespan)
   "Create a new timespan or a edit a existing TIMESPAN from user input."
