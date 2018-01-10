@@ -39,7 +39,7 @@
   (ht-map (lambda (key context)
             (list key
                   (vector (ht-get context :name)
-                          (elc--gps-to-string (ht-get context :location))
+                          (elc-location-gps-to-string (ht-get context :location))
                           (elc-time-timespan-to-string (ht-get context :time))
                           (format "%s" (ht-get context :action)))))
           elc-contexts))
@@ -51,10 +51,10 @@
 (defun elc-check-contexts ()
   "Execute contexts if they are valid."
   (interactive)
-  (let ((current (elc--get-gps)))
+  (let ((current (elc-location-get-gps)))
     (ht-each (lambda (name context)
                (if (and
-                    (< (elc--distance current (ht-get context :location)) 0.100)
+                    (< (elc-location--distance current (ht-get context :location)) 0.100)
                     (elc-time-within-timespanp (current-time) (ht-get context :time)))
                    (progn
                      (eval (ht-get context :action)))))
@@ -74,7 +74,7 @@ _c_: Create context
 _q_: Quit
 "
       ("n" (ht-set! elc--context-current :name (read-from-minibuffer "Name: ")))
-      ("l" (ht-set! elc--context-current :location (elc-location-get-gps)))
+      ("l" (elc-location-hydra/body) :exit t)
       ("t" (elc-time-create-timespan (ht-get elc--context-current :time)) :exit t)
       ("a" (ht-set! elc--context-current :action (read-minibuffer "Action: ")))
       ("c" (progn
