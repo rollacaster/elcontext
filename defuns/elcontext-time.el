@@ -6,6 +6,7 @@
 (require 'dash)
 (require 's)
 (require 'ivy)
+(require 'elcontext-utils)
 
 (defun elc-time-date-to-calendardate (date)
     "Convert time to calendar DATE."
@@ -116,19 +117,6 @@ _q_: Quit
   (setq elc-time--current timespan)
   (hydra-timespan/body))
 
-(defun elc-time--read-number-range (from to prompt)
-  "Read a number range between FROM and TO with a PROMPT."
-  (let ((number))
-    (while (not number)
-      (let ((userInput (read-from-minibuffer prompt)))
-        (if (and
-             (s-numeric? userInput)
-             (<= from (string-to-number userInput))
-             (>= to (string-to-number userInput)))
-            (setq number userInput)
-          (read-from-minibuffer (format "Please specify a number between %d-%d." from to)))))
-    number))
-
 (defun elc-time--read-week-days (selected-days)
   "Read week days from user input ignoring SELECTED-DAYS."
   (ivy-read "Week day: "
@@ -137,11 +125,11 @@ _q_: Quit
 
 (defun elc-time--read-hour ()
   "Read an hour form user input."
-  (elc-time--read-number-range 0 23 "Hour: "))
+  (elc-utils-read-number-range 0 23 "Hour: "))
 
 (defun elc-time--read-minute ()
   "Read an minute form user input."
-  (elc-time--read-number-range 0 59 "Minute: "))
+  (elc-utils-read-number-range 0 59 "Minute: "))
 
 (provide 'elcontext-time)
 
