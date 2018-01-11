@@ -40,7 +40,7 @@
             (list key
                   (vector (ht-get context :name)
                           (elc-location-gps-to-string (ht-get context :location))
-                          (elc-time-timespan-to-string (ht-get context :time))
+                          (elc-time-to-string context)
                           (format "%s" (ht-get context :action)))))
           elc-contexts))
 
@@ -55,7 +55,7 @@
     (ht-each (lambda (name context)
                (if (and
                     (< (elc-location--distance current (ht-get context :location)) 0.100)
-                    (elc-time-within-timespanp (current-time) (ht-get context :time)))
+                    (elc-time-valid-context context))
                    (progn
                      (eval (ht-get context :action)))))
              elc-contexts)))
@@ -67,7 +67,7 @@
       "
 _n_: Change name     | Name     %(ht-get elc--context-current :name)
 _l_: Change location | Location %(elc-location-gps-to-string (ht-get elc--context-current :location))
-_t_: Change time     | Time     %(elc-time-timespan-to-string (ht-get elc--context-current :time))
+_t_: Change time     | Time     %(elc-time-to-string elc--context-current)
 _a_: Change action   | Action   %(ht-get elc--context-current :action)
 
 _c_: Create context
@@ -75,7 +75,7 @@ _q_: Quit
 "
       ("n" (ht-set! elc--context-current :name (read-from-minibuffer "Name: ")))
       ("l" (elc-location-hydra/body) :exit t)
-      ("t" (elc-time-create-timespan (ht-get elc--context-current :time)) :exit t)
+      ("t" (elc-time-create elc--context-current) :exit t)
       ("a" (ht-set! elc--context-current :action (read-minibuffer "Action: ")))
       ("c" (progn
              (elc-add-context elc--context-id elc--context-current)

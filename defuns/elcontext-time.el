@@ -21,21 +21,33 @@
       (car (split-string (ht-get* timespan time) ":"))
     (wrong-type-argument nil)))
 
+(defun elc-time--get-hour-number (timespan time)
+  "Get the hour from a TIMESPAN for a certain TIME."
+  (condition-case nil
+      (string-to-number (elc-time--get-hour timespan time))
+    (wrong-type-argument nil)))
+
 (defun elc-time--get-minute (timespan time)
   "Get the minute from a TIMESPAN for a certain TIME."
   (condition-case nil
       (-last-item (split-string (ht-get* timespan time) ":"))
     (wrong-type-argument nil)))
 
-(defun elc-time-within-timespanp (date timespan)
+(defun elc-time--get-minute-number (timespan time)
+  "Get the minute from a TIMESPAN for a certain TIME."
+  (condition-case nil
+      (string-to-number (elc-time--get-minute timespan time))
+    (wrong-type-argument nil)))
+
+(defun elc-time--within-timespanp (date timespan)
   "Check if a DATE is within a TIMESPAN."
   (let ((hour (nth 2  (decode-time date)))
         (minute (nth 1  (decode-time date)))
         (day (elc-time-date-to-calendardate (decode-time date)))
-        (fromHour (string-to-number (elc-time--get-hour timespan :from)))
-        (fromMinute (string-to-number (elc-time--get-minute timespan :from)))
-        (toHour (string-to-number (elc-time--get-hour timespan :to)))
-        (toMinute (string-to-number (elc-time--get-minute timespan :to)))
+        (fromHour (elc-time--get-hour-number timespan :from))
+        (fromMinute (elc-time--get-minute-number timespan :from))
+        (toHour (elc-time--get-hour-number timespan :to))
+        (toMinute (elc-time--get-minute-number timespan :to))
         (days (ht-get timespan :days)))
     (cond
      ((and (numberp fromHour) (not (numberp toHour))) (user-error "From hour was specified without To hour"))
@@ -47,25 +59,6 @@
      ((and (null days) (>= hour fromHour) (>= minute fromMinute) (<= hour toHour) (<= minute toMinute)) t)
      ((and (member day days) (> hour fromHour) (< hour toHour)) t)
      ((and (member day days) (>= hour fromHour) (>= minute fromMinute) (<= hour toHour) (<= minute toMinute)) t))))
-
-(defun elc-time-timespan-to-string (timespan)
-  "Format a TIMESPAN to a string."
-  (if timespan
-      (let ((from-hour (elc-time--get-hour timespan :from))
-            (from-minute (elc-time--get-minute timespan :from))
-            (to-hour (elc-time--get-hour timespan :to))
-            (to-minute (elc-time--get-minute timespan :to))
-            (days (ht-get timespan :days)))
-        (concat
-         (when (not (null from-hour))
-           (concat
-            (elc-time--pad-time from-hour) ":" (elc-time--pad-time from-minute)
-            "-"
-            (elc-time--pad-time to-hour) ":" (elc-time--pad-time to-minute)))
-         (when (not (null days))
-           (concat (when (not (null from-hour)) " ")
-                   (s-replace " " "," (s-replace ")" "" (s-replace "(" "" (format "%s" days))))))))
-    ""))
 
 (defun elc-time--pad-time (time)
   "Pad a TIME with leading 0s."
@@ -112,11 +105,6 @@ _q_: Quit
      :color blue)
     ("q" (hydra-create-context/body) :exit t))
 
-(defun elc-time-create-timespan (timespan)
-  "Create a new timespan or a edit a existing TIMESPAN from user input."
-  (setq elc-time--current timespan)
-  (hydra-timespan/body))
-
 (defun elc-time--read-week-days (selected-days)
   "Read week days from user input ignoring SELECTED-DAYS."
   (ivy-read "Week day: "
@@ -130,6 +118,35 @@ _q_: Quit
 (defun elc-time--read-minute ()
   "Read an minute form user input."
   (elc-utils-read-number-range 0 59 "Minute: "))
+
+(defun elc-time-create (context)
+  "Create a new timespan or a edit a existing CONTEXT timespan from user input."
+  (setq elc-time--current (ht-get context :time))
+  (hydra-timespan/body))
+
+(defun elc-time-to-string (context)
+  "Format a CONTEXT time to a string."
+  (let ((timespan (ht-get context :time)))
+    (if timespan
+        (let ((from-hour (elc-time--get-hour timespan :from))
+              (from-minute (elc-time--get-minute timespan :from))
+              (to-hour (elc-time--get-hour timespan :to))
+              (to-minute (elc-time--get-minute timespan :to))
+              (days (ht-get timespan :days)))
+          (concat
+           (when (not (null from-hour))
+             (concat
+              (elc-time--pad-time from-hour) ":" (elc-time--pad-time from-minute)
+              "-"
+              (elc-time--pad-time to-hour) ":" (elc-time--pad-time to-minute)))
+           (when (not (null days))
+             (concat (when (not (null from-hour)) " ")
+                     (s-replace " " "," (s-replace ")" "" (s-replace "(" "" (format "%s" days))))))))
+      "")))
+
+(defun elc-time-valid-context (context)
+  "Check if the CONTEXT is valid for current time."
+  (elc-time--within-timespanp (current-time) (ht-get context :time)))
 
 (provide 'elcontext-time)
 
