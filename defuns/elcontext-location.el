@@ -20,14 +20,6 @@
           (lon (buffer-substring 32 41)))
       (ht (:lat (string-to-number lat)) (:lon (string-to-number lon))))))
 
-(defun elc-location-gps-to-string (gps)
-  "Convert GPS coordinate in a readable format."
-  (if gps
-      (let ((lat (ht-get gps :lat))
-            (lon (ht-get gps :lon)))
-        (concat "Lat: " (number-to-string lat) " Lon: " (number-to-string lon)))
-    ""))
-
 (defun elc-location--distance (from to)
   "Comutes the distance between FROM and TO in km."
   (let ((earth-radius 6371))
@@ -47,7 +39,7 @@
 
 (defhydra elc-location-hydra (:hint nil :foreign-keys warn)
   "
-_l_: Current location | %(elc-location-gps-to-string elc-location--current)
+_l_: Current location | %(elc-location-to-string elc-location--current)
 _e_: Edit location    |
 
 _c_: Create location
@@ -60,6 +52,22 @@ _q_: Quit
          (setq elc-location--current nil)
          (hydra-create-context/body)) :exit t)
   ("q" (hydra-create-context/body) :exit-t))
+
+(defun elc-location-create (context)
+  "Create a new location or a edit a existing CONTEXT location from user input."
+  (elc-location-hydra/body))
+
+(defun elc-location-to-string (gps)
+  "Convert GPS coordinate in a readable format."
+  (if gps
+      (let ((lat (ht-get gps :lat))
+            (lon (ht-get gps :lon)))
+        (concat "Lat: " (number-to-string lat) " Lon: " (number-to-string lon)))
+    ""))
+
+(defun elc-location-valid-context (context)
+  "Check if the CONTEXT is valid for current location."
+  (< (elc-location--distance current (ht-get context :location)) 0.100))
 
 (provide 'elcontext-location)
 

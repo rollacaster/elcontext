@@ -39,7 +39,7 @@
   (ht-map (lambda (key context)
             (list key
                   (vector (ht-get context :name)
-                          (elc-location-gps-to-string (ht-get context :location))
+                          (elc-location-to-string (ht-get context :location))
                           (elc-time-to-string context)
                           (format "%s" (ht-get context :action)))))
           elc-contexts))
@@ -54,7 +54,7 @@
   (let ((current (elc-location-get-gps)))
     (ht-each (lambda (name context)
                (if (and
-                    (< (elc-location--distance current (ht-get context :location)) 0.100)
+                    (elc-location-valid-context context)
                     (elc-time-valid-context context))
                    (progn
                      (eval (ht-get context :action)))))
@@ -66,7 +66,7 @@
 (defhydra hydra-create-context (:hint nil :foreign-keys warn)
       "
 _n_: Change name     | Name     %(ht-get elc--context-current :name)
-_l_: Change location | Location %(elc-location-gps-to-string (ht-get elc--context-current :location))
+_l_: Change location | Location %(elc-location-to-string (ht-get elc--context-current :location))
 _t_: Change time     | Time     %(elc-time-to-string elc--context-current)
 _a_: Change action   | Action   %(ht-get elc--context-current :action)
 
@@ -74,7 +74,7 @@ _c_: Create context
 _q_: Quit
 "
       ("n" (ht-set! elc--context-current :name (read-from-minibuffer "Name: ")))
-      ("l" (elc-location-hydra/body) :exit t)
+      ("l" (elc-location-create elc--context-current) :exit t)
       ("t" (elc-time-create elc--context-current) :exit t)
       ("a" (ht-set! elc--context-current :action (read-minibuffer "Action: ")))
       ("c" (progn
