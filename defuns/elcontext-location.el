@@ -6,10 +6,10 @@
 
 (setq elc-location--current nil)
 
-(defun elc-location-edit ()
-  "Edit coordinates manually."
-  (let ((lat (elc-utils-read-number-range 0 90 "Latitude: "))
-        (lon (elc-utils-read-number-range 0 90 "Longitude: ")))
+(defun elc-location-edit (&optional lat lon)
+  "Edit coordinates manually. Initial LAT and LON can be specified."
+  (let ((lat (elc-utils-read-number-range 0 90 "Latitude: " (number-to-string lat)))
+        (lon (elc-utils-read-number-range 0 90 "Longitude: " (number-to-string lon))))
     (ht (:lat (string-to-number lat)) (:lon (string-to-number lon)))))
 
 (defun elc-location-get-gps ()
@@ -46,15 +46,18 @@ _c_: Create location
 _q_: Quit
 "
   ("l" (setq elc-location--current (elc-location-get-gps)))
-  ("e" (setq elc-location--current (elc-location-edit)))
+  ("e" (setq elc-location--current (elc-location-edit (ht-get elc-location--current :lat)
+                                                      (ht-get elc-location--current :lon))))
   ("c" (progn
          (ht-set! elc--context-current :location elc-location--current)
          (setq elc-location--current nil)
          (hydra-create-context/body)) :exit t)
-  ("q" (hydra-create-context/body) :exit-t))
+  ("q" (hydra-create-context/body) :exit t))
+
 
 (defun elc-location-create (context)
   "Create a new location or a edit a existing CONTEXT location from user input."
+  (setq elc-location--current (ht-get context :location))
   (elc-location-hydra/body))
 
 (defun elc-location-to-string (gps)

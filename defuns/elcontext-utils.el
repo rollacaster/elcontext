@@ -2,11 +2,13 @@
 ;;; Commentary:
 ;;; Code:
 
-(defun elc-utils-read-number-range (from to prompt)
-  "Read a number range between FROM and TO with a PROMPT."
+(defun elc-utils-read-number-range (from to prompt &optional default)
+  "Read a number range between FROM and TO with a PROMPT.
+
+The optional DEFAULT is used when the user enters emtpy input."
   (let ((number))
     (while (not number)
-      (let ((userInput (read-from-minibuffer prompt)))
+      (let ((userInput (read-from-minibuffer prompt default)))
         (if (and
              (<= from (string-to-number userInput))
              (>= to (string-to-number userInput)))

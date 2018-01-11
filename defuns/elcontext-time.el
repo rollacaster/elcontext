@@ -80,11 +80,11 @@ _r_: Remove days
 _c_: Create timespan
 _q_: Quit
 "
-    ("f" (let ((from-hour (elc-time--pad-time (elc-time--read-hour)))
-               (from-minute (elc-time--pad-time (elc-time--read-minute))))
+    ("f" (let ((from-hour (elc-time--pad-time (elc-time--read-hour (elc-time--get-hour elc-time--current :from))))
+               (from-minute (elc-time--pad-time (elc-time--read-minute (elc-time--get-minute elc-time--current :from)))))
            (ht-set! elc-time--current :from (concat from-hour ":" from-minute))))
-    ("t" (let ((to-hour (elc-time--pad-time (elc-time--read-hour)))
-               (to-minute (elc-time--pad-time (elc-time--read-minute))))
+    ("t" (let ((to-hour (elc-time--pad-time (elc-time--read-hour (elc-time--get-hour elc-time--current :to))))
+               (to-minute (elc-time--pad-time (elc-time--read-minute (elc-time--get-minute elc-time--current :to)))))
            (ht-set! elc-time--current :to (concat to-hour ":" to-minute))))
     ("d" (ht-set! elc-time--current :days
                   (-snoc (ht-get elc-time--current :days)
@@ -111,13 +111,13 @@ _q_: Quit
             (-difference '("Mon" "Tue" "Wed" "Thu" "Fri" "Sat" "Sun" ) selected-days)
             :require-match t))
 
-(defun elc-time--read-hour ()
-  "Read an hour form user input."
-  (elc-utils-read-number-range 0 23 "Hour: "))
+(defun elc-time--read-hour (&optional hour)
+  "Read an hour form user input. Can define default HOUR."
+  (elc-utils-read-number-range 0 23 "Hour: " hour))
 
-(defun elc-time--read-minute ()
-  "Read an minute form user input."
-  (elc-utils-read-number-range 0 59 "Minute: "))
+(defun elc-time--read-minute (&optional minute)
+  "Read an minute form user input. Can define default MINUTE."
+  (elc-utils-read-number-range 0 59 "Minute: " minute))
 
 (defun elc-time-create (context)
   "Create a new timespan or a edit a existing CONTEXT timespan from user input."
