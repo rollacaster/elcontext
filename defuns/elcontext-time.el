@@ -70,7 +70,7 @@
 
 (defvar elc-time--current (ht))
 
-(defhydra hydra-timespan (:hint nil :foreign-keys warn)
+(defhydra elc-time-hydra (:hint nil :foreign-keys warn)
     "
 _f_: Change from | From %(ht-get elc-time--current :from)
 _t_: Change to   | To   %(ht-get elc-time--current :to)
@@ -97,7 +97,7 @@ _q_: Quit
                    (and (s-present? (ht-get elc-time--current :to)) (s-blank? (ht-get elc-time--current :from))))
                (progn
                  (message "Please specify a from and to time.")
-                 (hydra-timespan/body))
+                 (elc-time-hydra/body))
              (progn
                (ht-set! elc--context-current :time elc-time--current)
                (setq elc-time--current (ht))
@@ -122,7 +122,7 @@ _q_: Quit
 (defun elc-time-create (context)
   "Create a new timespan or a edit a existing CONTEXT timespan from user input."
   (setq elc-time--current (ht-get context :time))
-  (hydra-timespan/body))
+  (elc-time-hydra/body))
 
 (defun elc-time-to-string (context)
   "Format a CONTEXT time to a string."
