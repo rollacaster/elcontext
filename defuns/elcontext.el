@@ -39,7 +39,7 @@
   (ht-map (lambda (key context)
             (list key
                   (vector (ht-get context :name)
-                          (elc-location-to-string (ht-get context :location))
+                          (elc-location-to-string context)
                           (elc-time-to-string context)
                           (format "%s" (ht-get context :action)))))
           elc-contexts))
@@ -61,12 +61,12 @@
              elc-contexts)))
 
 (setq elc--context-id nil)
-(setq elc--context-current (ht (:name nil) (:time (ht)) (:action nil) (:location nil)))
+(setq elc--context-current (ht (:name nil) (:time (ht)) (:action nil) (:location (ht))))
 
 (defhydra hydra-create-context (:hint nil :foreign-keys warn)
       "
 _n_: Change name     | Name     %(ht-get elc--context-current :name)
-_l_: Change location | Location %(elc-location-to-string (ht-get elc--context-current :location))
+_l_: Change location | Location %(elc-location-to-string elc--context-current)
 _t_: Change time     | Time     %(elc-time-to-string elc--context-current)
 _a_: Change action   | Action   %(ht-get elc--context-current :action)
 
@@ -79,11 +79,11 @@ _q_: Quit
       ("a" (ht-set! elc--context-current :action (read-minibuffer "Action: ")))
       ("c" (progn
              (elc-add-context elc--context-id elc--context-current)
-             (setq elc--context-current (ht (:name nil) (:time (ht)) (:action nil) (:location nil)))
+             (setq elc--context-current (ht (:name nil) (:time (ht)) (:action nil) (:location (ht))))
              (tabulated-list-print)) :color blue)
       ("q" (progn
              (setq elc--context-id nil)
-             (setq elc--context-current (ht (:name nil) (:time (ht)) (:action nil) (:location nil)))) :exit t))
+             (setq elc--context-current (ht (:name nil) (:time (ht)) (:action nil) (:location (ht))))) :exit t))
 
 (defhydra hydra-context (:hint nil :exit t)
       "

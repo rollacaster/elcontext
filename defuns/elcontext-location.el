@@ -4,7 +4,7 @@
 (require 'ht)
 (require 'elcontext-utils)
 
-(setq elc-location--current nil)
+(setq elc-location--current (ht))
 
 (defun elc-location-edit (&optional lat lon)
   "Edit coordinates manually. Initial LAT and LON can be specified."
@@ -39,7 +39,7 @@
 
 (defhydra elc-location-hydra (:hint nil :foreign-keys warn)
   "
-_l_: Current location | %(elc-location-to-string elc-location--current)
+_l_: Current location | %(elc-location-to-string (ht (:location elc-location--current)))
 _e_: Edit location    |
 
 _c_: Create location
@@ -50,7 +50,7 @@ _q_: Quit
                                                       (ht-get elc-location--current :lon))))
   ("c" (progn
          (ht-set! elc--context-current :location elc-location--current)
-         (setq elc-location--current nil)
+         (setq elc-location--current (ht))
          (hydra-create-context/body)) :exit t)
   ("q" (hydra-create-context/body) :exit t))
 
@@ -60,13 +60,16 @@ _q_: Quit
   (setq elc-location--current (ht-get context :location))
   (elc-location-hydra/body))
 
-(defun elc-location-to-string (gps)
-  "Convert GPS coordinate in a readable format."
-  (if gps
-      (let ((lat (ht-get gps :lat))
-            (lon (ht-get gps :lon)))
-        (concat "Lat: " (number-to-string lat) " Lon: " (number-to-string lon)))
-    ""))
+(defun elc-location-to-string (context)
+  "Format a CONTEXT location to a string."
+  (let ((gps (ht-get context :location)))
+    (if gps
+        (let ((lat (ht-get gps :lat))
+              (lon (ht-get gps :lon)))
+          (if (and lat lon)
+            (concat "Lat: " (number-to-string lat) " Lon: " (number-to-string lon))
+            ""))
+      "")))
 
 (defun elc-location-valid-context (context)
   "Check if the CONTEXT is valid for current location."
