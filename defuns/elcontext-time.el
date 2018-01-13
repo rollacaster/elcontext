@@ -68,7 +68,7 @@
   "Format the from hourso of a TIMESPAN."
   (ht-get timespan :from))
 
-(defvar elc-time--current (ht))
+(setq elc-time--current (ht))
 
 (defhydra elc-time-hydra (:hint nil :foreign-keys warn)
     "
@@ -101,9 +101,12 @@ _q_: Quit
              (progn
                (ht-set! elc--context-current :time elc-time--current)
                (setq elc-time--current (ht))
-               (hydra-create-context/body))))
-     :color blue)
-    ("q" (hydra-create-context/body) :exit t))
+               (hydra-create-context/body)))) :exit t)
+    ("q" (progn
+           (setq elc-time--current (ht))
+           (ht-set! elc--context-current :time (ht))
+           (hydra-create-context/body)) :exit t))
+
 
 (defun elc-time--read-week-days (selected-days)
   "Read week days from user input ignoring SELECTED-DAYS."
