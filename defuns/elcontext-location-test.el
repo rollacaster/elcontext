@@ -1,6 +1,8 @@
 ;;; elcontext --- Define context specific services in emacs
 ;;; Commentary:
 ;;; Code:
+(require 'ht)
+(require 'elcontext-location)
 
 (ert-deftest elc--get-gps-test ()
   "Get the lat/lon Coordinates"
