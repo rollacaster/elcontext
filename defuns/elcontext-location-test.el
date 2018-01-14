@@ -16,8 +16,9 @@
 
 (ert-deftest elc--gps-to-sting-test ()
   "Convert gps coordinat to a string."
-  (should (equal (elc-location-to-string (ht (:lat 48.126011)
-                                         (:lon 11.558044)))
+  (should (equal (elc-location-to-string (ht (:location
+                                              (ht (:lat 48.126011)
+                                                  (:lon 11.558044)))))
                  "Lat: 48.126011 Lon: 11.558044")))
 
 ;;; elcontext-location-test.el ends here
