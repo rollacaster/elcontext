@@ -58,6 +58,7 @@
      ((and (null days) (>= hour fromHour) (>= minute fromMinute) (< hour toHour)) t)
      ((and (null days) (>= hour fromHour) (>= minute fromMinute) (<= hour toHour) (<= minute toMinute)) t)
      ((and (member day days) (> hour fromHour) (< hour toHour)) t)
+     ((and (member day days) (>= hour fromHour) (>= minute fromMinute) (< hour toHour)) t)
      ((and (member day days) (>= hour fromHour) (>= minute fromMinute) (<= hour toHour) (<= minute toMinute)) t))))
 
 (defun elc-time--pad-time (time)

@@ -16,7 +16,8 @@
   (should (elc-time--within-timespanp (date-to-time "2017-12-01 13:00") (ht (:from "13:00") (:to "13:10") (:days '("Fri")))))
   (should (elc-time--within-timespanp (date-to-time "2017-12-01 13:00") (ht (:from "13:00") (:to "13:10"))))
   (should-not (elc-time--within-timespanp (date-to-time "2017-12-01 13:00") (ht (:from "12:00") (:to "15:00") (:days '("Mon" "Tue")))))
-  (should (elc-time--within-timespanp (date-to-time "2017-12-01 13:10") (ht (:from "13:00") (:to "14:00")))))
+  (should (elc-time--within-timespanp (date-to-time "2017-12-01 13:10") (ht (:from "13:00") (:to "14:00"))))
+  (should (elc-time--within-timespanp (date-to-time "2017-12-01 13:10") (ht (:days '("Fri")) (:from "13:00") (:to "14:00")))))
 
 (ert-deftest elc-time-timespan-to-string ()
     "Test timespan conversion."
