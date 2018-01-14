@@ -117,8 +117,10 @@ _q_: quit
 (defun elc-delete-context ()
   "Delete context at point."
   (interactive)
-  (ht-remove! elc-contexts (tabulated-list-get-id))
-  (tabulated-list-print))
+  (let ((context (ht-get elc-contexts (tabulated-list-get-id))))
+    (when (y-or-n-p (concat "Delete context " (ht-get context :name) "?"))
+      (ht-remove! elc-contexts (tabulated-list-get-id))
+      (tabulated-list-print))))
 
 (provide 'elcontext)
 
