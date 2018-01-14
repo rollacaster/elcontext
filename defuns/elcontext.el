@@ -54,10 +54,10 @@
   (let ((current (elc-location-get-gps)))
     (ht-each (lambda (name context)
                (if (and
+                    (elc-action-valid-context context)
                     (elc-location-valid-context context)
                     (elc-time-valid-context context))
-                   (progn
-                     (eval (ht-get context :action)))))
+                   (elc-action-run context)))
              elc-contexts)))
 
 (setq elc--context-id nil)
