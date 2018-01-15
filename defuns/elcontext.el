@@ -3,6 +3,7 @@
 ;;; Code:
 (require 'ht)
 (require 'hydra)
+(require 'f)
 (require 'elcontext-time)
 (require 'uuidgen)
 
@@ -121,6 +122,21 @@ _q_: quit
     (when (y-or-n-p (concat "Delete context " (ht-get context :name) "?"))
       (ht-remove! elc-contexts (tabulated-list-get-id))
       (tabulated-list-print))))
+
+(defun elc--save-contexts ()
+  "Save contexts to disk."
+  (f-write-text (prin1-to-string elc-contexts) 'utf-8
+                (expand-file-name ".contexts" user-emacs-directory)))
+(add-hook 'kill-emacs-hook 'elc--save-contexts)
+
+(defun elc--load-contexts ()
+  "Load contexts from disc."
+  (when (f-exists? (expand-file-name ".contexts" user-emacs-directory))
+    (let ((saved-contexts (read (f-read-text (expand-file-name ".contexts" user-emacs-directory)))))
+      (if (ht? saved-contexts)
+          (setq elc-contexts saved-contexts)
+        (setq elc-contexts (ht))))))
+(elc--load-contexts)
 
 (provide 'elcontext)
 
