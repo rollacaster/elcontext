@@ -64,7 +64,7 @@
                                            (elc-time-valid-context context))
                                           (elc-action-run context)))))))
            elc-contexts))
-
+(run-at-time "1 min" 60 'elc-check-contexts)
 
 (setq elc--context-id nil)
 (setq elc--context-current (ht (:name nil) (:time (ht)) (:action nil) (:location (ht))))
