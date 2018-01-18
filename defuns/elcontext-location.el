@@ -2,6 +2,8 @@
 ;;; Commentary:
 ;;; Code:
 (require 'ht)
+(require 'async)
+(require 'deferred)
 (require 'elcontext-utils)
 
 (setq elc-location--current (ht))
@@ -11,6 +13,29 @@
   (let ((lat (elc-utils-read-number-range 0 90 "Latitude: " (number-to-string lat)))
         (lon (elc-utils-read-number-range 0 90 "Longitude: " (number-to-string lon))))
     (ht (:lat (string-to-number lat)) (:lon (string-to-number lon)))))
+
+(defun elc-location-whereami (cb)
+  "Async call whereami and call the CB twith result."
+  (async-start-process "gps" "whereami" cb))
+
+(defun elc-location-valid-context (context)
+  "Check if the CONTEXT is valid for current location."
+  (lexical-let ((gps (ht-get context :location)))
+    (deferred:$
+      (deferred:process "whereami")
+      (deferred:nextc it 'elc-location--whereami-to-gps)
+      (deferred:nextc it (lambda (x) (elc-location--within-range x gps))))))
+
+(defun elc-location--whereami-to-gps (whereami-output)
+  "Convert the WHEREAMI-OUTPUT to a gps coordinate."
+  (let* ((res (s-split-words whereami-output))
+         (lat (concat (nth 1 res) "." (nth 2 res)))
+         (lon (concat (nth 4 res) "." (nth 5 res))))
+    (ht (:lat (string-to-number lat)) (:lon (string-to-number lon)))))
+
+(defun elc-location--within-range (gps1 gps2)
+  "Ensure a GPS1 and GPS2 are wihtin 100 meters."
+  (< (elc-location--distance gps1 gps2) 0.100))
 
 (defun elc-location-get-gps ()
   "Return the current gps."
@@ -70,10 +95,6 @@ _q_: Quit
             (concat "Lat: " (number-to-string lat) " Lon: " (number-to-string lon))
             ""))
       "")))
-
-(defun elc-location-valid-context (context)
-  "Check if the CONTEXT is valid for current location."
-  (< (elc-location--distance current (ht-get context :location)) 0.100))
 
 (provide 'elcontext-location)
 

@@ -5,6 +5,7 @@
 (require 'hydra)
 (require 'f)
 (require 'elcontext-time)
+(require 'deferred)
 (require 'uuidgen)
 
 (defvar elc-contexts (ht))
@@ -52,14 +53,18 @@
 (defun elc-check-contexts ()
   "Execute contexts if they are valid."
   (interactive)
-  (let ((current (elc-location-get-gps)))
-    (ht-each (lambda (name context)
-               (if (and
-                    (elc-action-valid-context context)
-                    (elc-location-valid-context context)
-                    (elc-time-valid-context context))
-                   (elc-action-run context)))
-             elc-contexts)))
+  (ht-each (lambda (name context)
+             (lexical-let ((context context))
+               (deferred:$
+                 (elc-location-valid-context context)
+                 (deferred:nextc it (lambda (valid-location)
+                                      (if (and
+                                           (elc-action-valid-context context)
+                                           valid-location
+                                           (elc-time-valid-context context))
+                                          (elc-action-run context)))))))
+           elc-contexts))
+
 
 (setq elc--context-id nil)
 (setq elc--context-current (ht (:name nil) (:time (ht)) (:action nil) (:location (ht))))
