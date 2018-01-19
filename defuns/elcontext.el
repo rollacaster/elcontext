@@ -4,11 +4,21 @@
 (require 'ht)
 (require 'hydra)
 (require 'f)
-(require 'elcontext-time)
 (require 'deferred)
 (require 'uuidgen)
+(require 'elcontext-time)
 
 (defvar elc-contexts (ht))
+
+(defface elcontext-gray-face
+  '((((class color)) :foreground "#787878"))
+  "Gray color indicating a context which did not run yet."
+  :group 'elcontext)
+
+(defface elcontext-green-face
+  '((((class color)) :foreground "#61b361"))
+  "Green color indicating a context which did run today."
+  :group 'elcontext)
 
 (defvar elcontext-mode-map
   (let ((map (make-sparse-keymap)))
@@ -40,7 +50,7 @@
   "Return all context in table format."
   (ht-map (lambda (key context)
             (list key
-                  (vector (ht-get context :name)
+                  (vector (propertize (ht-get context :name) 'face (if (elc-action-valid-context context) 'elcontext-gray-face 'elcontext-green-face))
                           (elc-location-to-string context)
                           (elc-time-to-string context)
                           (format "%s" (ht-get context :action)))))
