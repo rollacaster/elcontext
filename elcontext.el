@@ -70,7 +70,7 @@
                   (vector (propertize (ht-get context :name) 'face (if (elc-action-valid-context context) 'elcontext-gray-face 'elcontext-green-face))
                           (elc-location-to-string context)
                           (elc-time-to-string context)
-                          (format "%s" (ht-get context :action)))))
+                          (prin1-to-string (ht-get context :action)))))
           elc-contexts))
 
 (defun elc-add-context (id context)
