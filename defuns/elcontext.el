@@ -1,6 +1,21 @@
 ;;; elcontext --- Define context specific services in emacs
+
+;; Author: Thomas Sojka
+;; Version: 1.0
+;; Package-Requires ((ht) (hydra) (f) (deferred) (uuidgen) (s) (ivy) (dash) (calendar))
+;; Keywords: context, time, timespan, location, gps, action
+;; URL: https://github.com/rollacaster/elcontext
+
 ;;; Commentary:
-;;; Code:
+
+;; elcontext
+
+;; Use (list-contexts) for on overview of all contexts. Within this overview
+;; several hydras will guide through the API, press ? to open the help hydra. A
+;; contexts consists of a name, location, timespan and action. When the curernt
+;; time is within the timespan and your current position within 100 meters of
+;; the location the action is triggered once per day.
+
 (require 'ht)
 (require 'hydra)
 (require 'f)
@@ -56,9 +71,9 @@
                           (format "%s" (ht-get context :action)))))
           elc-contexts))
 
-(defun elc-add-context (contextName context)
-  "Store a context with CONTEXTNAME and CONTEXT."
-  (ht-set! elc-contexts contextName context))
+(defun elc-add-context (id context)
+  "Store a context with ID and CONTEXT."
+  (ht-set! elc-contexts id context))
 
 (defun elc-check-contexts ()
   "Execute contexts if they are valid."
@@ -105,11 +120,11 @@ _q_: Quit
       "
 **elcontext help**
 
-_c_: create context
-_e_: edit context
-_d_: delete context
+_c_: Create context
+_e_: Edit context
+_d_: Delete context
 
-_q_: quit
+_q_: Quit
 "
       ("c" (elc-new-context))
       ("e" (elc-edit-context))
@@ -142,6 +157,7 @@ _q_: quit
   "Save contexts to disk."
   (f-write-text (prin1-to-string elc-contexts) 'utf-8
                 (expand-file-name ".contexts" user-emacs-directory)))
+
 (add-hook 'kill-emacs-hook 'elc--save-contexts)
 
 (defun elc--load-contexts ()
@@ -151,6 +167,7 @@ _q_: quit
       (if (ht? saved-contexts)
           (setq elc-contexts saved-contexts)
         (setq elc-contexts (ht))))))
+
 (elc--load-contexts)
 
 (provide 'elcontext)
