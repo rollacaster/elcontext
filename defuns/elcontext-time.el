@@ -5,7 +5,6 @@
 (require 'ht)
 (require 'dash)
 (require 's)
-(require 'ivy)
 (require 'elcontext-utils)
 
 (defun elc-time-date-to-calendardate (date)
@@ -91,7 +90,7 @@ _q_: Quit
                   (-snoc (ht-get elc-time--current :days)
                          (elc-time--read-week-days (ht-get elc-time--current :days)))))
     ("r" (ht-set! elc-time--current :days
-                  (-remove-item (ivy-read "Remove day:" (ht-get elc-time--current :days))
+                  (-remove-item (completing-read "Remove day:" (ht-get elc-time--current :days))
                                 (ht-get elc-time--current :days))))
     ("c" (progn
            (if (or (and (s-present? (ht-get elc-time--current :from)) (s-blank? (ht-get elc-time--current :to)))
@@ -111,7 +110,7 @@ _q_: Quit
 
 (defun elc-time--read-week-days (selected-days)
   "Read week days from user input ignoring SELECTED-DAYS."
-  (ivy-read "Week day: "
+  (completing-read "Week day: "
             (-difference '("Mon" "Tue" "Wed" "Thu" "Fri" "Sat" "Sun" ) selected-days)
             :require-match t))
 
