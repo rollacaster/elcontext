@@ -36,5 +36,6 @@
         nil
       t)))
 
+(provide 'elcontext-action)
 
 ;;; elcontext-action.el ends here

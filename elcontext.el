@@ -22,6 +22,8 @@
 (require 'deferred)
 (require 'uuidgen)
 (require 'elcontext-time)
+(require 'elcontext-action)
+(require 'elcontext-location)
 
 (defvar elc-contexts (ht))
 
