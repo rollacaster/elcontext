@@ -2,7 +2,6 @@
 ;;; Commentary:
 ;;; Code:
 (require 'ht)
-(require 'async)
 (require 'deferred)
 (require 'elcontext-utils)
 
@@ -14,9 +13,6 @@
         (lon (elc-utils-read-number-range 0 90 "Longitude: " (number-to-string lon))))
     (ht (:lat (string-to-number lat)) (:lon (string-to-number lon)))))
 
-(defun elc-location-whereami (cb)
-  "Async call whereami and call the CB twith result."
-  (async-start-process "gps" "whereami" cb))
 
 (defun elc-location-valid-context (context)
   "Check if the CONTEXT is valid for current location."
