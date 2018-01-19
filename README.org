@@ -3,7 +3,7 @@
 emacs
 
 ** Prerequisites
-Currently it works with MacOS and [[http://victor.github.io/whereami/][whereami]] needs to be installed.
+Currently macOS and [[http://victor.github.io/whereami/][whereami]] must be installed.
 
 ** Installation
 #+BEGIN_SRC emacs-lisp
@@ -11,7 +11,7 @@ Currently it works with MacOS and [[http://victor.github.io/whereami/][whereami]
 (require 'elcontext)
 #+END_SRC
 ** Usage
-Use =list-contexts= for on overview of all contexts. Within this overview
+Use =M-x list-contexts= for on overview of all contexts. Within this overview
 several hydras will guide through the API, press =?= to open the help hydra.
 
 A contexts consists of a
@@ -22,5 +22,5 @@ A contexts consists of a
 
 https://github.com/rollacaster/elcontext/blob/master/screenshot.png
 
-When the curernt time is within the timespan and your current position within
+When the current time is within the timespan and your current position within
 100 meters of the location the action is triggered once per day.

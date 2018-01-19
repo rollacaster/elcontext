@@ -5,7 +5,7 @@
 
 ## Prerequisites
 
-Currently it works with MacOS and [whereami](http://victor.github.io/whereami/) needs to be installed.
+Currently macOS and [whereami](http://victor.github.io/whereami/) must be installed.
 
 
 ## Installation
@@ -18,7 +18,7 @@ Currently it works with MacOS and [whereami](http://victor.github.io/whereami/) 
 
 ## Usage
 
-Use `list-contexts` for on overview of all contexts. Within this overview several hydras will guide through the API, press `?` to open the help hydra.
+Use `M-x list-contexts` for on overview of all contexts. Within this overview several hydras will guide through the API, press `?` to open the help hydra.
 
 A contexts consists of a
 
@@ -29,4 +29,4 @@ A contexts consists of a
 
 ![img](https://github.com/rollacaster/elcontext/blob/master/screenshot.png)
 
-When the curernt time is within the timespan and your current position within 100 meters of the location the action is triggered once per day.
+When the current time is within the timespan and your current position within 100 meters of the location the action is triggered once per day.
