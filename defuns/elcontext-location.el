@@ -36,10 +36,16 @@
 (defun elc-location-get-gps ()
   "Return the current gps."
   (with-temp-buffer ()
-    (call-process "whereami" nil t)
-    (let ((lat (buffer-substring 11 20))
-          (lon (buffer-substring 32 41)))
-      (ht (:lat (string-to-number lat)) (:lon (string-to-number lon))))))
+                    (condition-case err
+                        (call-process "whereami" nil t)
+                      (let ((lat (buffer-substring 11 20))
+                            (lon (buffer-substring 32 41)))
+                        (ht (:lat (string-to-number lat)) (:lon (string-to-number lon))))
+                      (file-error
+                       (if (y-or-n-p "Whereami not found. Do you want to download it? ")
+                           (progn (browse-url "http://victor.github.io/whereami/")
+                                  (user-error ""))
+                         (user-error "Please download http://victor.github.io/whereami/ to use el-context"))))))
 
 (defun elc-location--distance (from to)
   "Comutes the distance between FROM and TO in km."
