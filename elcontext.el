@@ -2,7 +2,7 @@
 
 ;; Author: Thomas Sojka
 ;; Version: 1.0
-;; Package-Requires ((ht) (hydra) (f) (deferred) (uuidgen) (s) (ivy) (dash) (calendar))
+;; Package-Requires ((ht) (hydra) (f) (deferred) (uuidgen) (s) (dash) (calendar))
 ;; Keywords: context, time, timespan, location, gps, action
 ;; URL: https://github.com/rollacaster/elcontext
 
