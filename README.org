@@ -9,6 +9,7 @@ Currently macOS and [[https://github.com/fulldecent/corelocationcli][CoreLocatio
 #+BEGIN_SRC emacs-lisp
 (add-to-list 'load-path "path-to-elcontext")
 (require 'elcontext)
+(elcontext-global-mode)
 #+END_SRC
 ** Usage
 Use =M-x list-contexts= for on overview of all contexts. Within this overview

@@ -92,7 +92,18 @@
                                            (elc-time-valid-context context))
                                           (elc-action-run context)))))))
            elc-contexts))
-(run-at-time "1 min" 60 'elc-check-contexts)
+
+(setq elcontext--timer nil)
+(define-minor-mode elcontext-global-mode
+  "Toogle elcontext-mode. Checks every minute for valid contexts"
+  :lighter "elc"
+  :group 'elcontext
+  :global t
+  (if (symbol-value 'elcontext-global-mode)
+      (setq elcontext--timer (run-at-time nil 5 'elc-check-contexts))
+    (progn
+      (cancel-timer elcontext--timer)
+      (setq elcontext--timer nil))))
 
 (setq elc--context-id nil)
 (setq elc--context-current (ht (:name nil) (:time (ht)) (:action nil) (:location (ht))))

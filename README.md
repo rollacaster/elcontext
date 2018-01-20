@@ -13,6 +13,7 @@ Currently macOS and [CoreLocationCLI](https://github.com/fulldecent/corelocation
 ```emacs-lisp
 (add-to-list 'load-path "path-to-elcontext")
 (require 'elcontext)
+(elcontext-global-mode)
 ```
 
 
