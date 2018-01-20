@@ -7,7 +7,7 @@
 (require 's)
 (require 'elcontext-utils)
 
-(defun elc-time-date-to-calendardate (date)
+(defun elc-time--date-to-calendardate (date)
     "Convert time to calendar DATE."
     (let ((month (nth 4  date))
           (day (nth 3  date))
@@ -42,7 +42,7 @@
   "Check if a DATE is within a TIMESPAN."
   (let ((hour (nth 2  (decode-time date)))
         (minute (nth 1  (decode-time date)))
-        (day (elc-time-date-to-calendardate (decode-time date)))
+        (day (elc-time--date-to-calendardate (decode-time date)))
         (fromHour (elc-time--get-hour-number timespan :from))
         (fromMinute (elc-time--get-minute-number timespan :from))
         (toHour (elc-time--get-hour-number timespan :to))
@@ -101,11 +101,11 @@ _q_: Quit
              (progn
                (ht-set! elc--context-current :time elc-time--current)
                (setq elc-time--current (ht))
-               (hydra-create-context/body)))) :exit t)
+               (elc-hydra-create-context/body)))) :exit t)
     ("q" (progn
            (setq elc-time--current (ht))
            (ht-set! elc--context-current :time (ht))
-           (hydra-create-context/body)) :exit t))
+           (elc-hydra-create-context/body)) :exit t))
 
 
 (defun elc-time--read-week-days (selected-days)

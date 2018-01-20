@@ -28,22 +28,22 @@
 
 (defvar elc-contexts (ht))
 
-(defface elcontext-gray-face
+(defface elc-gray-face
   '((((class color)) :foreground "#787878"))
   "Gray color indicating a context which did not run yet."
   :group 'elcontext)
 
-(defface elcontext-green-face
+(defface elc-green-face
   '((((class color)) :foreground "#61b361"))
   "Green color indicating a context which did run today."
   :group 'elcontext)
 
-(defvar elcontext-mode-map
+(defvar elc-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "c") 'elc-new-context)
     (define-key map (kbd "e") 'elc-edit-context)
     (define-key map (kbd "d") 'elc-delete-context)
-    (define-key map (kbd "?") 'hydra-context/body)
+    (define-key map (kbd "?") 'elc-hydra-help/body)
     map)
   "Keymap for `elcontext-mode'.")
 
@@ -51,9 +51,9 @@
 (define-derived-mode elcontext-mode tabulated-list-mode "Contexts"
   "Special mode for contexts."
   (setq mode-name "elcontext")
-  (use-local-map elcontext-mode-map)
+  (use-local-map elc-mode-map)
   (setq tabulated-list-format [("Name" 15 t) ("Location" 30 t) ("Time" 30 t) ("Action" 20 t)])
-  (setq tabulated-list-entries 'elc-get-contexts-for-table)
+  (setq tabulated-list-entries 'elc--get-contexts-for-table)
   (tabulated-list-init-header)
   (tabulated-list-print))
 
@@ -64,11 +64,11 @@
   (switch-to-buffer "**Contexts**")
   (elcontext-mode))
 
-(defun elc-get-contexts-for-table ()
+(defun elc--get-contexts-for-table ()
   "Return all context in table format."
   (ht-map (lambda (key context)
             (list key
-                  (vector (propertize  (if (ht-get context :name) (ht-get context :name) "") 'face (if (elc-action-valid-context context) 'elcontext-gray-face 'elcontext-green-face))
+                  (vector (propertize  (if (ht-get context :name) (ht-get context :name) "") 'face (if (elc-action-valid-context context) 'elc-gray-face 'elc-green-face))
                           (elc-location-to-string context)
                           (elc-time-to-string context)
                           (prin1-to-string (ht-get context :action)))))
@@ -108,7 +108,7 @@
 (setq elc--context-id nil)
 (setq elc--context-current (ht (:name nil) (:time (ht)) (:action nil) (:location (ht))))
 
-(defhydra hydra-create-context (:hint nil :foreign-keys warn)
+(defhydra elc-hydra-create-context (:hint nil :foreign-keys warn)
       "
 _n_: Change name     | Name     %(ht-get elc--context-current :name)
 _l_: Change location | Location %(elc-location-to-string elc--context-current)
@@ -130,7 +130,7 @@ _q_: Quit
              (setq elc--context-id nil)
              (setq elc--context-current (ht (:name nil) (:time (ht)) (:action nil) (:location (ht))))) :exit t))
 
-(defhydra hydra-context (:hint nil :exit t)
+(defhydra elc-hydra-help (:hint nil :exit t)
       "
 **elcontext help**
 
@@ -149,7 +149,7 @@ _q_: Quit
   "Create a new context."
   (interactive)
   (setq elc--context-id (uuidgen-4))
-  (hydra-create-context/body))
+  (elc-hydra-create-context/body))
 
 (defun elc-edit-context ()
   "Edit context at point."
@@ -158,7 +158,7 @@ _q_: Quit
     (setq elc--context-id context-id)
     (setq elc--context-current (ht-get elc-contexts context-id))
     (condition-case nil
-        (hydra-create-context/body)
+        (elc-hydra-create-context/body)
       (wrong-type-argument (user-error "No context found at point")))))
 
 (defun elc-delete-context ()

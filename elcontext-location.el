@@ -77,8 +77,8 @@ _q_: Quit
   ("c" (progn
          (ht-set! elc--context-current :location elc-location--current)
          (setq elc-location--current (ht))
-         (hydra-create-context/body)) :exit t)
-  ("q" (hydra-create-context/body) :exit t))
+         (elc-hydra-create-context/body)) :exit t)
+  ("q" (elc-hydra-create-context/body) :exit t))
 
 
 (defun elc-location-create (context)
