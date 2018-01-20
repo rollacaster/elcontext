@@ -23,4 +23,6 @@
                                                   (:lon 11.558044)))))
                  "Lat: 48.126011 Lon: 11.558044")))
 
+(provide 'elcontext-location-test)
+
 ;;; elcontext-location-test.el ends here

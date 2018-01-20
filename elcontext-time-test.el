@@ -27,4 +27,6 @@
     (should (equal (elc-time-to-string (ht (:time (ht (:days '("Tue")))))) "Tue"))
     (should (equal (elc-time-to-string (ht (:time (ht (:days '("Mon" "Tue")))))) "Mon,Tue")))
 
+(provide 'elcontext-time-test)
+
 ;;; elcontext-time-test.el ends here

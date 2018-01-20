@@ -21,4 +21,6 @@
   "Should be t if last-run is not defined."
   (should (elc-action-valid-context (ht))))
 
+(provide 'elcontext-action-test)
+
 ;;; elcontext-action-test.el ends here

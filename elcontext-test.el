@@ -3,6 +3,10 @@
 ;;; Code:
 (require 'ht)
 
+(require 'elcontext-time-test)
+(require 'elcontext-location-test)
+(require 'elcontext-action-test)
+
 (ert-deftest elc-store-context-test ()
   "Store a new location")
 
