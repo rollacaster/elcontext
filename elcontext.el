@@ -1,10 +1,14 @@
 ;;; elcontext --- Define context specific services in emacs
 
+;; Copyright (C) 2018 Thomas Sojka
+
 ;; Author: Thomas Sojka
 ;; Version: 1.0.0
 ;; Package-Requires ((ht) (hydra) (f) (deferred) (uuidgen) (s) (dash) (calendar))
 ;; Keywords: context, time, timespan, location, gps, action
 ;; URL: https://github.com/rollacaster/elcontext
+
+;; This file is not part of GNU Emacs.
 
 ;;; Commentary:
 
