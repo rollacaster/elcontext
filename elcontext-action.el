@@ -16,8 +16,8 @@
 (defun elc-action-valid-context (context)
   "Check if the CONTEXT did already run today."
   (when (or (not (ht-get context :last-run))
-            (elc-action--same-day (ht-get context :last-run)
-                                  (current-time)))
+            (not (elc-action--same-day (ht-get context :last-run)
+                                       (current-time))))
     t))
 
 (defun elc-action--same-day (time1 time2)
@@ -30,11 +30,10 @@
          (context-year (nth 5  context-last-run))
          (context-month (nth 4  context-last-run))
          (context-day (nth 3  context-last-run)))
-    (if (and (eq year context-year)
+    (when (and (eq year context-year)
                (eq month context-month)
                (eq day context-day))
-        nil
-      t)))
+        t)))
 
 (provide 'elcontext-action)
 

@@ -18,7 +18,7 @@
                (date-to-time "2018-01-14 00:00"))))
 
 (ert-deftest elc-action-valid-context ()
-  "Should be nil if last-run is not defined."
-  (should-not (elc-action-valid-context (ht))))
+  "Should be t if last-run is not defined."
+  (should (elc-action-valid-context (ht))))
 
 ;;; elcontext-action-test.el ends here
