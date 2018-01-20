@@ -5,7 +5,7 @@
 
 ## Prerequisites
 
-Currently macOS and [whereami](http://victor.github.io/whereami/) must be installed.
+Currently macOS and [CoreLocationCLI](https://github.com/fulldecent/corelocationcli) must be installed.
 
 
 ## Installation

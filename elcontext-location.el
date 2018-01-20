@@ -18,15 +18,15 @@
   "Check if the CONTEXT is valid for current location."
   (lexical-let ((gps (ht-get context :location)))
     (deferred:$
-      (deferred:process "whereami")
-      (deferred:nextc it 'elc-location--whereami-to-gps)
+      (deferred:process "CoreLocationCLI")
+      (deferred:nextc it 'elc-location--gps-to-ht)
       (deferred:nextc it (lambda (x) (elc-location--within-range x gps))))))
 
-(defun elc-location--whereami-to-gps (whereami-output)
-  "Convert the WHEREAMI-OUTPUT to a gps coordinate."
-  (let* ((res (s-split-words whereami-output))
-         (lat (concat (nth 1 res) "." (nth 2 res)))
-         (lon (concat (nth 4 res) "." (nth 5 res))))
+(defun elc-location--gps-to-ht (gps-output)
+  "Convert the GPS-OUTPUT to a gps coordinate hashtable."
+  (let* ((gps (s-split-words gps-output))
+         (lat (concat (nth 0 gps) "." (nth 1 gps)))
+         (lon (concat (nth 2 gps) "." (nth 3 gps))))
     (ht (:lat (string-to-number lat)) (:lon (string-to-number lon)))))
 
 (defun elc-location--within-range (gps1 gps2)
@@ -37,15 +37,14 @@
   "Return the current gps."
   (with-temp-buffer ()
                     (condition-case err
-                        (call-process "whereami" nil t)
-                      (let ((lat (buffer-substring 11 20))
-                            (lon (buffer-substring 32 41)))
-                        (ht (:lat (string-to-number lat)) (:lon (string-to-number lon))))
+                        (progn
+                          (call-process "CoreLocationCLI" nil t)
+                          (elc-location--gps-to-ht (buffer-string)))
                       (file-error
-                       (if (y-or-n-p "Whereami not found. Do you want to download it? ")
-                           (progn (browse-url "http://victor.github.io/whereami/")
+                       (if (y-or-n-p "CoreLocationCLI not found. Do you want to download it? ")
+                           (progn (browse-url "https://github.com/fulldecent/corelocationcli")
                                   (user-error ""))
-                         (user-error "Please download http://victor.github.io/whereami/ to use el-context"))))))
+                         (user-error "Please download https://github.com/fulldecent/corelocationcli to use el-context"))))))
 
 (defun elc-location--distance (from to)
   "Comutes the distance between FROM and TO in km."
