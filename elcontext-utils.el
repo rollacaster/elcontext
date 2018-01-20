@@ -1,4 +1,4 @@
-;;; elcontext --- Define context specific services in emacs
+;;; elcontext.el --- Create context specific actions
 
 ;; Copyright (C) 2018 Thomas Sojka
 

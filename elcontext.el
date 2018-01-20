@@ -1,4 +1,4 @@
-;;; elcontext.el --- Define context specific services
+;;; elcontext.el --- Create context specific actions
 
 ;; Copyright (C) 2018 Thomas Sojka
 
