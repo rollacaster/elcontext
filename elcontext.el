@@ -67,7 +67,7 @@
   "Return all context in table format."
   (ht-map (lambda (key context)
             (list key
-                  (vector (propertize (ht-get context :name) 'face (if (elc-action-valid-context context) 'elcontext-gray-face 'elcontext-green-face))
+                  (vector (propertize  (if (ht-get context :name) (ht-get context :name) "") 'face (if (elc-action-valid-context context) 'elcontext-gray-face 'elcontext-green-face))
                           (elc-location-to-string context)
                           (elc-time-to-string context)
                           (prin1-to-string (ht-get context :action)))))
