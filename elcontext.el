@@ -145,15 +145,19 @@ _q_: Quit
   (let ((context-id (tabulated-list-get-id)))
     (setq elc--context-id context-id)
     (setq elc--context-current (ht-get elc-contexts context-id))
-    (hydra-create-context/body)))
+    (condition-case nil
+        (hydra-create-context/body)
+      (wrong-type-argument (user-error "No context found at point")))))
 
 (defun elc-delete-context ()
   "Delete context at point."
   (interactive)
   (let ((context (ht-get elc-contexts (tabulated-list-get-id))))
-    (when (y-or-n-p (concat "Delete context " (ht-get context :name) "?"))
-      (ht-remove! elc-contexts (tabulated-list-get-id))
-      (tabulated-list-print))))
+    (condition-case nil
+        (when (y-or-n-p (concat "Delete context " (ht-get context :name) "?"))
+          (ht-remove! elc-contexts (tabulated-list-get-id))
+          (tabulated-list-print))
+      (wrong-type-argument (user-error "No context found at point")))))
 
 (defun elc--save-contexts ()
   "Save contexts to disk."
