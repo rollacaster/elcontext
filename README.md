@@ -19,7 +19,7 @@ Currently macOS and [CoreLocationCLI](https://github.com/fulldecent/corelocation
 
 ## Usage
 
-Use `M-x list-contexts` for on overview of all contexts. Within this overview several hydras will guide through the API, press `?` to open the help hydra.
+Use `M-x elcontext` for on overview of all contexts. Within this overview several hydras will guide through the API, press `?` to open the help hydra.
 
 A contexts consists of a
 

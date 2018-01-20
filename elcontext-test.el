@@ -7,7 +7,7 @@
 (require 'elcontext-location-test)
 (require 'elcontext-action-test)
 
-(ert-deftest elc-store-context-test ()
+(ert-deftest elcontext-store-context-test ()
   "Store a new location")
 
 ;;; elcontext-test.el ends here

@@ -4,21 +4,21 @@
 (require 'ht)
 (require 'elcontext-location)
 
-(ert-deftest elc--get-gps-test ()
+(ert-deftest elcontext--get-gps-test ()
   "Get the lat/lon Coordinates"
-  (let ((gps (elc-location-get-gps)))
+  (let ((gps (elcontext-location-get-gps)))
     (should (numberp (ht-get gps :lon)))
     (should (numberp (ht-get gps :lat)))))
 
-(ert-deftest elc--distance-test ()
+(ert-deftest elcontext--distance-test ()
   "Compute distance between two points"
   (let* ((coordA (ht (:lat 48.157262) (:lon 11.540225)))
          (coordB (ht (:lat 48.154438) (:lon 11.541286))))
-    (should (= (elc-location--distance coordA coordB) 0.3237273177020497))))
+    (should (= (elcontext-location--distance coordA coordB) 0.3237273177020497))))
 
-(ert-deftest elc--gps-to-sting-test ()
+(ert-deftest elcontext--gps-to-sting-test ()
   "Convert gps coordinat to a string."
-  (should (equal (elc-location-to-string (ht (:location
+  (should (equal (elcontext-location-to-string (ht (:location
                                               (ht (:lat 48.126011)
                                                   (:lon 11.558044)))))
                  "Lat: 48.126011 Lon: 11.558044")))

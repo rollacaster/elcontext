@@ -1,26 +1,48 @@
 ;;; elcontext --- Define context specific services in emacs
+
+;; Copyright (C) 2018 Thomas Sojka
+
+;; Author: Thomas Sojka
+
+;; This program is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 ;;; Commentary:
+
+;;
+
 ;;; Code:
+
 (require 'ht)
 
-(defun elc-action-run (context)
+(defun elcontext-action-run (context)
   "Run a CONTEXT action."
-  (elc--mark-as-run context (current-time))
+  (elcontext--mark-as-run context (current-time))
   (eval (ht-get context :action)))
 
-(defun elc--mark-as-run (context time)
+(defun elcontext--mark-as-run (context time)
     "Update a CONTEXT with the last TIME it was run."
     (ht-set! context :last-run time)
     context)
 
-(defun elc-action-valid-context (context)
+(defun elcontext-action-valid-context (context)
   "Check if the CONTEXT did already run today."
   (when (or (not (ht-get context :last-run))
-            (not (elc-action--same-day (ht-get context :last-run)
+            (not (elcontext-action--same-day (ht-get context :last-run)
                                        (current-time))))
     t))
 
-(defun elc-action--same-day (time1 time2)
+(defun elcontext-action--same-day (time1 time2)
   "Check if TIME1 and TIME2 have the same day."
   (let* ((today (decode-time time1))
          (year (nth 5 today))

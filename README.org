@@ -12,7 +12,7 @@ Currently macOS and [[https://github.com/fulldecent/corelocationcli][CoreLocatio
 (elcontext-global-mode)
 #+END_SRC
 ** Usage
-Use =M-x list-contexts= for on overview of all contexts. Within this overview
+Use =M-x elcontext= for on overview of all contexts. Within this overview
 several hydras will guide through the API, press =?= to open the help hydra.
 
 A contexts consists of a
