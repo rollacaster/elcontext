@@ -1,4 +1,4 @@
-;;; timespan --- Handle timespans with elsip
+;;; timespan --- Handle timespans with elsip -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 (require 'ht)

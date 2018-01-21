@@ -1,4 +1,4 @@
-;;; elcontext.el --- Create context specific actions
+;;; elcontext.el --- Create context specific actions -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2018 Thomas Sojka
 
@@ -38,7 +38,7 @@
 
 (defun elcontext-location-valid-context (context)
   "Check if the CONTEXT is valid for current location."
-  (lexical-let ((gps (ht-get context :location)))
+  (let ((gps (ht-get context :location)))
     (deferred:$
       (deferred:process "CoreLocationCLI")
       (deferred:nextc it 'elcontext-location--gps-to-ht)

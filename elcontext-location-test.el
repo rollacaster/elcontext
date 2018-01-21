@@ -1,4 +1,4 @@
-;;; elcontext --- Define context specific services in emacs
+;;; elcontext --- Define context specific services in emacs -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 (require 'ht)

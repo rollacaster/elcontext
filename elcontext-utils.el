@@ -1,4 +1,4 @@
-;;; elcontext.el --- Create context specific actions
+;;; elcontext.el --- Create context specific actions -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2018 Thomas Sojka
 
