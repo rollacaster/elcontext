@@ -1,6 +1,6 @@
 # elcontext
 
-> Bring your editing experience to the next level with context-based editing for emacs
+> Bring your editing experience to the next level with context-based actions for emacs
 
 
 ## Prerequisites
