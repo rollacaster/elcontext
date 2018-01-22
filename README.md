@@ -5,7 +5,7 @@
 
 ## Prerequisites
 
-Currently macOS and [CoreLocationCLI](https://github.com/fulldecent/corelocationcli) must be installed.
+Currently only macOS is supported.
 
 
 ## Installation

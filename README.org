@@ -3,7 +3,7 @@
 emacs
 
 ** Prerequisites
-Currently macOS and [[https://github.com/fulldecent/corelocationcli][CoreLocationCLI]] must be installed.
+Currently only macOS is supported.
 
 ** Installation
 #+BEGIN_SRC emacs-lisp

@@ -24,8 +24,8 @@
 ;;; Code:
 
 (require 'ht)
-(require 'deferred)
 (require 'elcontext-utils)
+(require 'osx-location)
 
 (setq elcontext-location--current (ht))
 
@@ -35,21 +35,12 @@
         (lon (elcontext-utils-read-number-range 0 90 "Longitude: " (number-to-string lon))))
     (ht (:lat (string-to-number lat)) (:lon (string-to-number lon)))))
 
-
 (defun elcontext-location-valid-context (context)
   "Check if the CONTEXT is valid for current location."
   (let ((gps (ht-get context :location)))
-    (deferred:$
-      (deferred:process "CoreLocationCLI")
-      (deferred:nextc it 'elcontext-location--gps-to-ht)
-      (deferred:nextc it (lambda (x) (elcontext-location--within-range x gps))))))
-
-(defun elcontext-location--gps-to-ht (gps-output)
-  "Convert the GPS-OUTPUT to a gps coordinate hashtable."
-  (let* ((gps (s-split-words gps-output))
-         (lat (concat (nth 0 gps) "." (nth 1 gps)))
-         (lon (concat (nth 2 gps) "." (nth 3 gps))))
-    (ht (:lat (string-to-number lat)) (:lon (string-to-number lon)))))
+    (if (and (ht-get gps :lat) (ht-get gps :lon))
+        (elcontext-location--within-range (elcontext-location-get-gps) gps))
+    t))
 
 (defun elcontext-location--within-range (gps1 gps2)
   "Ensure a GPS1 and GPS2 are wihtin 100 meters."
@@ -57,16 +48,7 @@
 
 (defun elcontext-location-get-gps ()
   "Return the current gps."
-  (with-temp-buffer ()
-                    (condition-case err
-                        (progn
-                          (call-process "CoreLocationCLI" nil t)
-                          (elcontext-location--gps-to-ht (buffer-string)))
-                      (file-error
-                       (if (y-or-n-p "CoreLocationCLI not found. Do you want to download it? ")
-                           (progn (browse-url "https://github.com/fulldecent/corelocationcli")
-                                  (user-error ""))
-                         (user-error "Please download https://github.com/fulldecent/corelocationcli to use el-context"))))))
+  (ht (:lat osx-location-latitude) (:lon osx-location-longitude)))
 
 (defun elcontext-location--distance (from to)
   "Comutes the distance between FROM and TO in km."

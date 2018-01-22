@@ -4,7 +4,7 @@
 
 ;; Author: Thomas Sojka
 ;; Version: 1.0.0
-;; Package-Requires: ((ht "2.3") (hydra "0.14.0") (emacs "24.3") (f "0.20.0") (deferred "0.5.1") (uuidgen "0.3"))
+;; Package-Requires: ((ht "2.3") (hydra "0.14.0") (emacs "24.3") (f "0.20.0") (osx-location "20150613.217") (uuidgen "0.3"))
 ;; Keywords: calendar, convenience
 ;; URL: https://github.com/rollacaster/elcontext
 
@@ -14,7 +14,7 @@
 
 ;; elcontext
 
-;; Currently macOS and CoreLocationCLI must be installed.
+;; Currently only macOS is supported.
 ;; Use (elcontext) for on overview of all contexts. Within this overview
 ;; several hydras will guide through the API, press ? to open the help hydra. A
 ;; contexts consists of a name, location, timespan and action. When the curernt
@@ -26,8 +26,8 @@
 (require 'ht)
 (require 'hydra)
 (require 'f)
-(require 'deferred)
 (require 'uuidgen)
+(require 'osx-location)
 (require 'elcontext-time)
 (require 'elcontext-action)
 (require 'elcontext-location)
@@ -85,15 +85,11 @@
   "Execute contexts if they are valid."
   (interactive)
   (ht-each (lambda (name context)
-             (lexical-let ((context context))
-               (deferred:$
-                 (elcontext-location-valid-context context)
-                 (deferred:nextc it (lambda (valid-location)
-                                      (if (and
-                                           (elcontext-action-valid-context context)
-                                           valid-location
-                                           (elcontext-time-valid-context context))
-                                          (elcontext-action-run context)))))))
+             (if (and
+                  (elcontext-action-valid-context context)
+                  (elcontext-location-valid-context context)
+                  (elcontext-time-valid-context context))
+                 (elcontext-action-run context)))
            elcontext-contexts))
 
 (setq elcontext--timer nil)
@@ -104,7 +100,9 @@
   :global t
   :require 'elcontext
   (if (symbol-value 'elcontext-global-mode)
-      (setq elcontext--timer (run-at-time nil 5 'elcontext-check-contexts))
+      (progn
+        (setq elcontext--timer (run-at-time nil 5 'elcontext-check-contexts))
+        (osx-location-watch))
     (progn
       (cancel-timer elcontext--timer)
       (setq elcontext--timer nil))))
