@@ -171,7 +171,9 @@ _q_: Quit
 
 (defun elcontext-time-valid-context (context)
   "Check if the CONTEXT is valid for current time."
-  (elcontext-time--within-timespanp (current-time) (ht-get context :time)))
+  (if (ht-get context :time)
+      (elcontext-time--within-timespanp (current-time) (ht-get context :time)))
+  t)
 
 (provide 'elcontext-time)
 

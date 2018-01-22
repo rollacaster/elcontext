@@ -27,6 +27,10 @@
     (should (equal (elcontext-time-to-string (ht (:time (ht (:days '("Tue")))))) "Tue"))
     (should (equal (elcontext-time-to-string (ht (:time (ht (:days '("Mon" "Tue")))))) "Mon,Tue")))
 
+(ert-deftest elcontext-time-valid-context ()
+  "No time is a valid context."
+  (should (equal (elcontext-time-valid-context (ht)) t)))
+
 (provide 'elcontext-time-test)
 
 ;;; elcontext-time-test.el ends here

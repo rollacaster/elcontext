@@ -23,6 +23,10 @@
                                                   (:lon 11.558044)))))
                  "Lat: 48.126011 Lon: 11.558044")))
 
+(ert-deftest elcontext-location-valid-context-teset ()
+  "Context is valid if no gps was specified."
+  (should (equal (elcontext-location-valid-context (ht)) t)))
+
 (provide 'elcontext-location-test)
 
 ;;; elcontext-location-test.el ends here

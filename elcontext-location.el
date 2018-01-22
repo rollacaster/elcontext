@@ -38,7 +38,7 @@
 (defun elcontext-location-valid-context (context)
   "Check if the CONTEXT is valid for current location."
   (let ((gps (ht-get context :location)))
-    (if (and (ht-get gps :lat) (ht-get gps :lon))
+    (if (ht? gps)
         (elcontext-location--within-range (elcontext-location-get-gps) gps))
     t))
 
