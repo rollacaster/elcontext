@@ -34,13 +34,8 @@
 
 (defvar elcontext-contexts (ht))
 
-(defface elcontext-gray-face
-  '((((class color)) :foreground "#787878"))
-  "Gray color indicating a context which did not run yet."
-  :group 'elcontext)
-
-(defface elcontext-green-face
-  '((((class color)) :foreground "#61b361"))
+(defface elcontext-success
+  '((((class color)) :inherit 'success))
   "Green color indicating a context which did run today."
   :group 'elcontext)
 
@@ -74,7 +69,9 @@
   "Return all context in table format."
   (ht-map (lambda (key context)
             (list key
-                  (vector (propertize  (if (ht-get context :name) (ht-get context :name) "") 'face (if (elcontext-action-valid-context context) 'elcontext-gray-face 'elcontext-green-face))
+                  (vector (if (elcontext-action-valid-context context)
+                              (ht-get context :name)
+                            (propertize  (if (ht-get context :name) (ht-get context :name) "") 'face 'elcontext-success))
                           (elcontext-location-to-string context)
                           (elcontext-time-to-string context)
                           (prin1-to-string (ht-get context :action)))))
