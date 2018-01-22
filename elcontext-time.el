@@ -165,7 +165,7 @@ _q_: Quit
               "-"
               (elcontext-time--pad-time to-hour) ":" (elcontext-time--pad-time to-minute)))
            (when (not (null days))
-             (concat (when (not (null from-hour)) " ")
+             (concat (when from-hour " ")
                      (s-replace " " "," (s-replace ")" "" (s-replace "(" "" (format "%s" days))))))))
       "")))
 
