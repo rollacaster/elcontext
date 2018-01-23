@@ -27,10 +27,11 @@
 (require 'hydra)
 (require 'f)
 (require 'uuidgen)
-(require 'osx-location)
 (require 'elcontext-time)
 (require 'elcontext-action)
 (require 'elcontext-location)
+(when (string-equal system-type "darwin")
+  (require 'osx-location))
 
 (defvar elcontext-contexts (ht))
 
@@ -53,7 +54,10 @@
   "Special mode for contexts."
   (setq mode-name "elcontext")
   (use-local-map elcontext-mode-map)
-  (setq tabulated-list-format [("Name" 15 t) ("Location" 30 t) ("Time" 30 t) ("Action" 20 t)])
+  (setq tabulated-list-format
+        (vconcat (vector '("Name" 15 t))
+                 (when (string-equal system-type "darwin") (vector '("Location" 30 t)))
+                 (vector '("Time" 30 t) '("Action" 20 t))))
   (setq tabulated-list-entries 'elcontext--get-contexts-for-table)
   (tabulated-list-init-header)
   (tabulated-list-print))
@@ -69,12 +73,14 @@
   "Return all context in table format."
   (ht-map (lambda (key context)
             (list key
-                  (vector (if (elcontext-action-valid-context context)
-                              (ht-get context :name)
-                            (propertize  (if (ht-get context :name) (ht-get context :name) "") 'face 'elcontext-success))
-                          (elcontext-location-to-string context)
-                          (elcontext-time-to-string context)
-                          (prin1-to-string (ht-get context :action)))))
+                  (vconcat
+                   (vector (if (elcontext-action-valid-context context)
+                               (ht-get context :name)
+                             (propertize  (if (ht-get context :name) (ht-get context :name) "") 'face 'elcontext-success)))
+                   (when (string-equal system-type "darwin")
+                     (vector (elcontext-location-to-string context)))
+                   (vector (elcontext-time-to-string context)
+                           (prin1-to-string (ht-get context :action))))))
           elcontext-contexts))
 
 (defun elcontext-add-context (id context)
@@ -102,7 +108,8 @@
   (if (symbol-value 'elcontext-global-mode)
       (progn
         (setq elcontext--timer (run-at-time nil 5 'elcontext-check-contexts))
-        (osx-location-watch))
+        (when (string-equal system-type "darwin")
+          (osx-location-watch)))
     (progn
       (cancel-timer elcontext--timer)
       (setq elcontext--timer nil))))
@@ -111,15 +118,17 @@
 (setq elcontext--context-current (ht (:name nil) (:time (ht)) (:action nil) (:location (ht))))
 
 (defhydra elcontext-hydra-create-context (:hint nil :foreign-keys warn)
-      "
-_n_: Change name     | Name     %(ht-get elcontext--context-current :name)
-_l_: Change location | Location %(elcontext-location-to-string elcontext--context-current)
+  (concat "
+_n_: Change name     | Name     %(ht-get elcontext--context-current :name)"
+          (when (string-equal system-type "darwin") "
+_l_: Change location | Location %(elcontext-location-to-string elcontext--context-current)")
+ "
 _t_: Change time     | Time     %(elcontext-time-to-string elcontext--context-current)
 _a_: Change action   | Action   %(ht-get elcontext--context-current :action)
 
 _c_: Create context
 _q_: Quit
-"
+")
       ("n" (ht-set! elcontext--context-current :name (read-from-minibuffer "Name: ")))
       ("l" (elcontext-location-create elcontext--context-current) :exit t)
       ("t" (elcontext-time-create elcontext--context-current) :exit t)

@@ -25,7 +25,8 @@
 
 (require 'ht)
 (require 'elcontext-utils)
-(require 'osx-location)
+(when (string-equal system-type "darwin")
+  (require 'osx-location))
 
 (setq elcontext-location--current (ht))
 
@@ -38,7 +39,7 @@
 (defun elcontext-location-valid-context (context)
   "Check if the CONTEXT is valid for current location."
   (let ((gps (ht-get context :location)))
-    (if (ht? gps)
+    (if (and (ht? gps) (ht-get gps :lon) (ht-get gps :lat))
         (elcontext-location--within-range (elcontext-location-get-gps) gps))
     t))
 
@@ -87,8 +88,11 @@ _q_: Quit
 
 (defun elcontext-location-create (context)
   "Create a new location or a edit a existing CONTEXT location from user input."
-  (setq elcontext-location--current (ht-get context :location))
-  (elcontext-location-hydra/body))
+  (if (string-equal system-type "darwin")
+      (progn
+        (setq elcontext-location--current (ht-get context :location))
+        (elcontext-location-hydra/body))
+    (message "Location Feature works only with macOS")))
 
 (defun elcontext-location-to-string (context)
   "Format a CONTEXT location to a string."
