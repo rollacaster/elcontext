@@ -21,6 +21,7 @@ A contexts can consists of a
 -   name,
 -   location (only for macOS),
 -   timespan,
+-   directory,
 -   and action.
 
 ![img](https://github.com/rollacaster/elcontext/blob/master/screenshot.png)

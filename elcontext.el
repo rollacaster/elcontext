@@ -30,6 +30,7 @@
 (require 'elcontext-time)
 (require 'elcontext-action)
 (require 'elcontext-location)
+(require 'elcontext-directory)
 (when (string-equal system-type "darwin")
   (require 'osx-location))
 
@@ -56,8 +57,8 @@
   (use-local-map elcontext-mode-map)
   (setq tabulated-list-format
         (vconcat (vector '("Name" 15 t))
-                 (when (string-equal system-type "darwin") (vector '("Location" 30 t)))
-                 (vector '("Time" 30 t) '("Action" 20 t))))
+                 (when (string-equal system-type "darwin") (vector '("Location" 25 t)))
+                 (vector '("Time" 25 t) '("Directory" 25 t) '("Action" 25 t))))
   (setq tabulated-list-entries 'elcontext--get-contexts-for-table)
   (tabulated-list-init-header)
   (tabulated-list-print))
@@ -80,6 +81,7 @@
                    (when (string-equal system-type "darwin")
                      (vector (elcontext-location-to-string context)))
                    (vector (elcontext-time-to-string context)
+                           (ht-get context :directory)
                            (prin1-to-string (ht-get context :action))))))
           elcontext-contexts))
 
@@ -94,7 +96,8 @@
              (if (and
                   (elcontext-action-valid-context context)
                   (elcontext-location-valid-context context)
-                  (elcontext-time-valid-context context))
+                  (elcontext-time-valid-context context)
+                  (elcontext-directory-valid-context context))
                  (elcontext-action-run context)))
            elcontext-contexts))
 
@@ -115,16 +118,17 @@
       (setq elcontext--timer nil))))
 
 (setq elcontext--context-id nil)
-(setq elcontext--context-current (ht (:name nil) (:time (ht)) (:action nil) (:location (ht))))
+(setq elcontext--context-current
+      (ht (:name nil) (:time (ht)) (:action nil) (:location (ht)) (:directory "")))
 
 (defhydra elcontext-hydra-create-context (:hint nil :foreign-keys warn)
-  (concat "
-_n_: Change name     | Name     %(ht-get elcontext--context-current :name)"
+  (concat "_n_: Change name     | Name     %(ht-get elcontext--context-current :name)"
           (when (string-equal system-type "darwin") "
-_l_: Change location | Location %(elcontext-location-to-string elcontext--context-current)")
+_l_: Change location  | Location %(elcontext-location-to-string elcontext--context-current)")
  "
-_t_: Change time     | Time     %(elcontext-time-to-string elcontext--context-current)
-_a_: Change action   | Action   %(ht-get elcontext--context-current :action)
+_t_: Change time      | Time     %(elcontext-time-to-string elcontext--context-current)
+_d_: Change directory | Directory   %(ht-get elcontext--context-current :directory)
+_a_: Change action    | Action   %(ht-get elcontext--context-current :action)
 
 _c_: Create context
 _q_: Quit
@@ -132,6 +136,7 @@ _q_: Quit
       ("n" (ht-set! elcontext--context-current :name (read-from-minibuffer "Name: ")))
       ("l" (elcontext-location-create elcontext--context-current) :exit t)
       ("t" (elcontext-time-create elcontext--context-current) :exit t)
+      ("d" (elcontext-directory-create elcontext--context-current) :exit t)
       ("a" (ht-set! elcontext--context-current :action (read-minibuffer "Action: ")))
       ("c" (progn
              (elcontext-add-context elcontext--context-id elcontext--context-current)
