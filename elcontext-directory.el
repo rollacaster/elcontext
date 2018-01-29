@@ -29,7 +29,8 @@
 (defun elcontext-directory-valid-context (context)
   "Check if the CONTEXT did already run today."
   (when (or (equal (ht-get context :directory) nil)
-            (equal (ht-get context :directory) default-directory))
+            (equal (expand-file-name "" (ht-get context :directory))
+                   (expand-file-name "" default-directory)))
     t))
 
 (defhydra elcontext-directory-hydra (:hint nil :foreign-keys warn)
