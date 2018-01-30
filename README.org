@@ -1,24 +1,33 @@
-* elcontext
-> Bring your editing experience to the next level with context-based actions for
-emacs
+[[./title.png]]
+
+#+BEGIN_QUOTE
+  Bring your editing experience to the next level with context-based
+  actions for emacs
+#+END_QUOTE
 
 ** Installation
+
 #+BEGIN_SRC emacs-lisp
-(add-to-list 'load-path "path-to-elcontext")
-(require 'elcontext)
-(elcontext-global-mode)
+    (add-to-list 'load-path "path-to-elcontext")
+    (require 'elcontext)
+    (elcontext-global-mode)
 #+END_SRC
+
 ** Usage
-Use =M-x elcontext= for on overview of all contexts. Within this overview
-several hydras will guide through the API, press =?= to open the help hydra.
 
-A contexts can consists of a
-+ name,
-+ location (only for macOS),
-+ timespan,
-+ directory,
-+ and action.
+Use =M-x elcontext= for on overview of all contexts. Within this
+overview several hydras will guide through the API, press =?= to open
+the help hydra.
 
-https://github.com/rollacaster/elcontext/blob/master/screenshot.png
+Contexts can consist of a
 
-When all defined context parts are valid the action is triggered once per day.
+- name,
+- location (only for macOS),
+- timespan,
+- directory,
+- and action.
+
+[[./screenshot.png]]
+
+When all defined context parts are valid the action is triggered once
+per day.
