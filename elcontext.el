@@ -122,13 +122,13 @@
       (ht (:name nil) (:time (ht)) (:action nil) (:location (ht)) (:directory "")))
 
 (defhydra elcontext-hydra-create-context (:hint nil :foreign-keys warn)
-  (concat "_n_: Change name     | Name     %(ht-get elcontext--context-current :name)"
+  (concat "_n_: Change name      | Name      %(ht-get elcontext--context-current :name)"
           (when (string-equal system-type "darwin") "
-_l_: Change location  | Location %(elcontext-location-to-string elcontext--context-current)")
+_l_: Change location  | Location  %(elcontext-location-to-string elcontext--context-current)")
  "
-_t_: Change time      | Time     %(elcontext-time-to-string elcontext--context-current)
-_d_: Change directory | Directory   %(ht-get elcontext--context-current :directory)
-_a_: Change action    | Action   %(ht-get elcontext--context-current :action)
+_t_: Change time      | Time      %(elcontext-time-to-string elcontext--context-current)
+_d_: Change directory | Directory %(ht-get elcontext--context-current :directory)
+_a_: Change action    | Action    %(ht-get elcontext--context-current :action)
 
 _c_: Create context
 _q_: Quit
