@@ -48,7 +48,7 @@ Contexts can consist of a
 
 ![img](./screenshot.png)
 
-If any part of a context is omitted it part is always valid e.g. no location means anywhere, no time means anytime. Each command is triggered once per day.
+If a part of a context is omitted this part is always valid e.g. no location means anywhere, no time means anytime. Each command is triggered once a day.
 
 
 # Use Cases
@@ -56,7 +56,7 @@ If any part of a context is omitted it part is always valid e.g. no location mea
 
 ### Work / Home development environment
 
-Start all work applications when you're in the office, stop them when you're home (and start others). This was the initial reason to create `elcontext`. It integrates well with [prodigy](https://github.com/rejeep/prodigy.el). You can define all applications you need at work or home as prodigy-services.
+Start all work applications when you're in the office, stop them when you're home (and start others). This was the original reason to create `elcontext`. It integrates well with [prodigy](https://github.com/rejeep/prodigy.el). You can define all applications you need at work or home as prodigy-services.
 
 
 ### Add yours!
