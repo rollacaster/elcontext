@@ -4,7 +4,7 @@
 
 ;; Author: Thomas Sojka
 ;; Version: 1.0.0
-;; Package-Requires: ((ht "2.3") (hydra "0.14.0") (emacs "24.3") (f "0.20.0") (osx-location "20150613.217") (uuidgen "0.3"))
+;; Package-Requires: ((ht "2.3") (hydra "0.14.0") (emacs "24.3") (f "0.20.0") (osx-location "0.4") (uuidgen "0.3"))
 ;; Keywords: calendar, convenience
 ;; URL: https://github.com/rollacaster/elcontext
 
