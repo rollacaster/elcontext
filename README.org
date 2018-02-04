@@ -6,11 +6,31 @@
 #+END_QUOTE
 
 ** Installation
-
+=elcontext= is available on [[https://melpa.org][MELPA]]. Add the MELPA repositories with
+the following code in your init file:
 #+BEGIN_SRC emacs-lisp
-    (add-to-list 'load-path "path-to-elcontext")
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/") t)
+(package-initialize)
+#+END_SRC
+
+Install =elcontext= by running:
+
+
+=M-x package-install RET elcontext RET=
+
+Add the following code to your init file to continuously check for valid contexts:
+#+BEGIN_SRC emacs-lisp
     (require 'elcontext)
     (elcontext-global-mode)
+#+END_SRC
+
+Alternatively if you are using [[https://github.com/jwiegley/use-package][use-package]] you can use the following configuration:
+#+BEGIN_SRC emacs-lisp
+(use-package elcontext
+  :ensure t
+  :config
+  (elcontext-global-mode))
 #+END_SRC
 
 ** Usage
