@@ -12,8 +12,6 @@
 
 ;;; Commentary:
 
-;; elcontext
-
 ;; Use M-x elcontext for on overview of all contexts. Within this overview
 ;; several hydras will guide through the API, press ? to open the help hydra.
 ;; Contexts can consist of name, location (only for macOS), timespan, directory,
