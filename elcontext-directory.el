@@ -28,7 +28,7 @@
 (setq elcontext-directory--current "")
 (defun elcontext-directory-valid-context (context)
   "Check if the CONTEXT did already run today."
-  (when (or (equal (ht-get context :directory) nil)
+  (when (or (equal (ht-get context :directory) "")
             (equal (expand-file-name "" (ht-get context :directory))
                    (expand-file-name "" default-directory)))
     t))
