@@ -102,7 +102,7 @@
 (setq elcontext--timer nil)
 (define-minor-mode elcontext-global-mode
   "Toogle elcontext-mode. Checks every minute for valid contexts"
-  :lighter "elc"
+  :lighter " elc"
   :group 'elcontext
   :global t
   :require 'elcontext
