@@ -27,6 +27,7 @@
 (require 'ht)
 (require 'dash)
 (require 's)
+(require 'hydra)
 (require 'elcontext-utils)
 
 (defun elcontext-time--date-to-calendardate (date)
