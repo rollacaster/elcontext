@@ -24,6 +24,7 @@
 ;;; Code:
 
 (require 'ht)
+(require 'hydra)
 (require 'elcontext-utils)
 (when (string-equal system-type "darwin")
   (require 'osx-location))

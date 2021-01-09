@@ -24,6 +24,7 @@
 ;;; Code:
 
 (require 'ht)
+(require 'hydra)
 
 (setq elcontext-directory--current "")
 (defun elcontext-directory-valid-context (context)
